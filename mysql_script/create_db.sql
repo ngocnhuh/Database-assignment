@@ -94,8 +94,8 @@ CREATE TABLE `Trip_schedule`(
 CREATE TABLE `Trip`(
   `trip_id` int(9) ZEROFILL NOT NULL AUTO_INCREMENT,
   `sched_id` int(2) ZEROFILL NOT NULL,
-  `departure_time`datetime NOT NULL,
-  `arrival_time`  datetime NOT NULL,
+  `departure_time`timestamp NOT NULL,
+  `arrival_time`  timestamp NOT NULL,
   `bus_id` varchar(10) NOT NULL,
   `driver_id` int(5) ZEROFILL NOT NULL,
   PRIMARY KEY (`trip_id`)
