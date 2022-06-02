@@ -42,11 +42,12 @@ CREATE TABLE `Telephone_staff`(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Tele_shift`(
+  `shift_id` int(7) ZEROFILL NOT NULL AUTO_INCREMENT,
   `ee_id` int(5) ZEROFILL NOT NULL,
-  `date` varchar(10) NOT NULL,
+  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN'),
   `start` time,
   `till`  time,
-  PRIMARY KEY (`ee_id`,`date`,`start`,`till`)
+  PRIMARY KEY (`shift_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -71,9 +72,10 @@ CREATE TABLE `Route`(
 
 
 CREATE TABLE `Stop`(
+  `stop_id` int(5) ZEROFILL NOT NULL AUTO_INCREMENT,
   `route_id` int(3) ZEROFILL NOT NULL,
   `stop_address` varchar(100) NOT NULL,
-  PRIMARY KEY (`route_id`,`stop_address`)
+  PRIMARY KEY (`stop_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Trip_schedule`(
@@ -81,7 +83,7 @@ CREATE TABLE `Trip_schedule`(
   `route_id` int(3) ZEROFILL NOT NULL,
   `passenger_price` decimal(10,2) NOT NULL,
   `luggage_price`   decimal(10,2) NOT NULL,
-  `date` varchar(10) NOT NULL,
+  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN') NOT NULL,
   `departure_time` time NOT NULL,
   `arrival_time` time,
   `bustype` enum('NORMAL','LIMO','VIP'),
@@ -90,24 +92,20 @@ CREATE TABLE `Trip_schedule`(
 
 
 CREATE TABLE `Trip`(
-  `trip_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
+  `trip_id` int(9) ZEROFILL NOT NULL AUTO_INCREMENT,
   `sched_id` int(2) ZEROFILL NOT NULL,
-  `departure_time`timestamp NOT NULL,
-  `arrival_time`  timestamp NOT NULL,
+  `departure_time`datetime NOT NULL,
+  `arrival_time`  datetime NOT NULL,
   `bus_id` varchar(10) NOT NULL,
+  `driver_id` int(5) ZEROFILL NOT NULL,
   PRIMARY KEY (`trip_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `Trip_driver`(
-  `trip_id` int(11) ZEROFILL NOT NULL,
-  `ee_id` int(5) ZEROFILL NOT NULL,
-  PRIMARY KEY (`trip_id`,`ee_id`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE `Trip_staff`(
-  `trip_id` int(11) ZEROFILL NOT NULL,
+  `staff_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
+  `trip_id` int(9) ZEROFILL NOT NULL,
   `ee_id` int(5) ZEROFILL NOT NULL,
-  PRIMARY KEY (`trip_id`,`ee_id`)
+  PRIMARY KEY ( `staff_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Customer`(
@@ -152,30 +150,29 @@ CREATE TABLE `Payment_methods` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Ticket`(
-  `ticket_id` int(3) ZEROFILL NOT NULL AUTO_INCREMENT,
-  `trip_id` int(11) ZEROFILL NOT NULL,
+  `ticket_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
+  `trip_id` int(9) ZEROFILL NOT NULL,
   `start_location` varchar(50),
   `paid`     boolean,
   `payment_method` tinyint(1),
   `customer_id` int(11) ZEROFILL NOT NULL,
   `program_id` int(9),
   `total_cost` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`ticket_id`,`trip_id`)
+  PRIMARY KEY (`ticket_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Passenger_ticket`(
-  `ticket_id` int(3) ZEROFILL NOT NULL,
-  `trip_id` int(11) ZEROFILL NOT NULL,
+  `ticket_id` int(11) ZEROFILL NOT NULL,
+  `trip_id` int(9) ZEROFILL NOT NULL,
   `seat_num` varchar(4) NOT NULL,
-  PRIMARY KEY (`ticket_id`,`trip_id`)
+  PRIMARY KEY (`ticket_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Luggage_ticket`(
-  `ticket_id` int(3) ZEROFILL NOT NULL,
-  `trip_id` int(11) ZEROFILL NOT NULL,
+  `ticket_id` int(11) ZEROFILL NOT NULL,
   `weight` int NOT NULL,
   `discription` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`ticket_id`,`trip_id`)
+  PRIMARY KEY (`ticket_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*ADD CONSTRAINT*/
@@ -209,11 +206,8 @@ ADD CONSTRAINT  `fk_sched_routeid` FOREIGN KEY (`route_id`) REFERENCES `Route` (
 
 ALTER TABLE `Trip`
 ADD ( CONSTRAINT  `fk_trip_routeid` FOREIGN KEY (`sched_id`) REFERENCES `Trip_schedule` (`sched_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-      CONSTRAINT  `fk_trip_busid` FOREIGN KEY (`bus_id`) REFERENCES `Bus` (`bus_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
-
-ALTER TABLE `Trip_driver`
-ADD ( CONSTRAINT  `fk_tripdriver_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-      CONSTRAINT  `fk_tripdriver_driverid` FOREIGN KEY (`ee_id`) REFERENCES `Driver` (`ee_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
+      CONSTRAINT  `fk_trip_busid` FOREIGN KEY (`bus_id`) REFERENCES `Bus` (`bus_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+	  CONSTRAINT  `fk_trip_driverid` FOREIGN KEY (`driver_id`) REFERENCES `Driver` (`ee_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
 
 ALTER TABLE `Trip_staff`
 ADD ( CONSTRAINT  `fk_tripstaff_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -229,10 +223,11 @@ ADD ( CONSTRAINT  `fk_ticket_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (
       CONSTRAINT  `fk_ticket_paymethod` FOREIGN KEY (`payment_method`) REFERENCES `Payment_methods` (`method_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
 
 ALTER TABLE `Passenger_ticket`
-ADD CONSTRAINT  `fk_passenger_ticket_id` FOREIGN KEY (`ticket_id`,`trip_id`) REFERENCES `Ticket` (`ticket_id`,`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD (CONSTRAINT  `fk_passenger_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	 CONSTRAINT  `fk_passenger_trip_id` FOREIGN KEY (`trip_id`) REFERENCES `Ticket` (`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE);
 
 ALTER TABLE `Luggage_ticket`
-ADD CONSTRAINT  `fk_luggage_ticket_id` FOREIGN KEY (`ticket_id`,`trip_id`) REFERENCES `Ticket` (`ticket_id`,`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT  `fk_luggage_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 DROP TRIGGER IF EXISTS `CheckSeat`;
 DELIMITER $$
@@ -249,7 +244,6 @@ BEGIN
     END IF; 
 END; $$
 DELIMITER ;
-
 /*INSERT DATA*/
 
 INSERT INTO `Employee` VALUES
@@ -291,18 +285,18 @@ INSERT INTO `Bus_staff` VALUES
   (9,3);
 
 INSERT INTO `Tele_shift` VALUES
-  (1,'Mon','7:00','10:00'),
-  (1,'Mon','16:00','19:00'),
-  (7,'Mon','10:00','13:00'),
-  (7,'Mon','13:00','16:00'),
-  (1,'Wed','7:00','10:00'),
-  (1,'Wed','16:00','19:00'),
-  (7,'Wed','10:00','13:00'),
-  (7,'Wed','13:00','16:00'),
-  (1,'Fri','7:00','10:00'),
-  (1,'Fri','16:00','19:00'),
-  (7,'Fri','10:00','13:00'),
-  (7,'Fri','13:00','16:00');
+  (1,1,'MON','7:00','10:00'),
+  (2,1,'MON','16:00','19:00'),
+  (3,7,'MON','10:00','13:00'),
+  (4,7,'MON','13:00','16:00'),
+  (5,1,'WED','7:00','10:00'),
+  (6,1,'WED','16:00','19:00'),
+  (7,7,'WED','10:00','13:00'),
+  (8,7,'WED','13:00','16:00'),
+  (9,1,'FRI','7:00','10:00'),
+  (10,1,'FRI','16:00','19:00'),
+  (11,7,'FRI','10:00','13:00'),
+  (12,7,'FRI','13:00','16:00');
 
 INSERT INTO `Bus` VALUES 
   ('51B-001.72','NORMAL',30, 16000,'DOUBLE'),
@@ -319,49 +313,44 @@ INSERT INTO `Route` VALUES
   (5,'TPHCM','NHATRANG','435','8:45');
   
 INSERT INTO `Stop` VALUES
-  (1, '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen'),
-  (1, 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen'),
-  (1, 'Ben xe khach Da Nang, Cam Le, Da Nang'),
-  (2, 'Buu dien thanh pho Da Lat'),
-  (2, 'Hoa An, Dau Giay, Dong Nai'),
-  (2, 'Hoi cho trien lam Tan Binh'),
-  (3, '266 Dong Den, P10, Tan Binh, TPHCM'),
-  (3, 'Cho Dau Moi Tan Hoa 555 Pham Van Dong, Buon Ma Thuot'),
-  (3, '134 Hai Ba Trung, Buon Ma Thuot'),
-  (4, 'Ben Xe Mien Dong, TPHCM'),
-  (4, '248 Le Duan, Phan Rang-Thap Cham, Ninh Thuan'),
-  (5, '138 Nguyen Cu Trinh, Quan 1, TPHCM'),
-  (5, 'Kiot 8 Khach san Muong Thanh 4 Tran Phu, Nha Trang');
+  (1, 1, '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen'),
+  (2, 1, 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen'),
+  (3, 1, 'Ben xe khach Da Nang, Cam Le, Da Nang'),
+  (4, 2, 'Buu dien thanh pho Da Lat'),
+  (5, 2, 'Hoa An, Dau Giay, Dong Nai'),
+  (6, 2, 'Hoi cho trien lam Tan Binh'),
+  (7, 3, '266 Dong Den, P10, Tan Binh, TPHCM'),
+  (8, 3, 'Cho Dau Moi Tan Hoa 555 Pham Van Dong, Buon Ma Thuot'),
+  (9, 3, '134 Hai Ba Trung, Buon Ma Thuot'),
+  (10, 4, 'Ben Xe Mien Dong, TPHCM'),
+  (11, 4, '248 Le Duan, Phan Rang-Thap Cham, Ninh Thuan'),
+  (12, 5, '138 Nguyen Cu Trinh, Quan 1, TPHCM'),
+  (13, 5, 'Kiot 8 Khach san Muong Thanh 4 Tran Phu, Nha Trang');
   
 INSERT INTO `Trip_schedule` VALUES
-  (1, 1, 220000,75000, 'Mon', '7:00','15:30','NORMAL'),
-  (2, 1, 280000,90000, 'Tue', '12:00','20:30','LIMO'),
-  (3, 2, 380000,90000, 'Mon', '8:00','22:00','LIMO'),
-  (4, 2, 300000,80000, 'Tue', '8:00','22:00','NORMAL'),
-  (5, 2, 350000,80000, 'Sat', '8:00','22:00','NORMAL'),
-  (6, 3, 300000,75000, 'Wed', '11:30','18:40','VIP'),
-  (7, 4, 180000,55000, 'Mon', '7:00','14:30','NORMAL'),
-  (8, 4, 160000,55000, 'Thu', '7:00','14:30','NORMAL'),
-  (9, 5, 350000,80000, 'Mon', '6:00','14:45','LIMO'),
-  (10, 5, 350000,80000, 'Sun', '12:00','20:45','LIMO');
+  (1, 1, 220000,75000, 'MON', '7:00','15:30','NORMAL'),
+  (2, 1, 280000,90000, 'TUE', '12:00','20:30','LIMO'),
+  (3, 2, 380000,90000, 'MON', '8:00','22:00','LIMO'),
+  (4, 2, 300000,80000, 'TUE', '8:00','22:00','NORMAL'),
+  (5, 2, 350000,80000, 'SAT', '8:00','22:00','NORMAL'),
+  (6, 3, 300000,75000, 'WED', '11:30','18:40','VIP'),
+  (7, 4, 180000,55000, 'MON', '7:00','14:30','NORMAL'),
+  (8, 4, 160000,55000, 'THU', '7:00','14:30','NORMAL'),
+  (9, 5, 350000,80000, 'MON', '6:00','14:45','LIMO'),
+  (10, 5, 350000,80000, 'SUN', '12:00','20:45','LIMO');
 
 INSERT INTO `Trip` VALUES
-  (1,1,'2022-05-30 7:00:00','2022-05-30 15:30:00','51B-001.72'),
-  (2,2,'2022-05-31 12:00:00','2022-05-31 20:30:00','60B-745.98'),
-  (3,3,'2022-05-30 8:00:00','2022-05-30 22:00:00','51B-001.18');
+  (1,1,'2022-05-30 7:00:00','2022-05-30 15:30:00','51B-001.72',2),
+  (2,2,'2022-05-31 12:00:00','2022-05-31 20:30:00','60B-745.98',10),
+  (3,3,'2022-05-30 8:00:00','2022-05-30 22:00:00','51B-001.18',2);
   
-INSERT INTO `Trip_driver` VALUES
-  (1,2),
-  (2,10),
-  (3,2);
-
 INSERT INTO `Trip_staff` VALUES
-  (1,4),
-  (1,8),
-  (2,5),
-  (2,9),
-  (3,4),
-  (3,9);
+  (1, 1,4),
+  (2, 1,8),
+  (3, 2,5),
+  (4, 2,9),
+  (5, 3,4),
+  (6, 3,9);
 
 INSERT INTO `Customer` VALUES
   (1,'Le','Duc Hai','1997-01-10','0902005505','170/04 Duong so 204 Cao Lo, P.04, Quan 8, TPHCM', 'haiduc123@gmail.com'),
@@ -395,23 +384,24 @@ INSERT INTO `Ticket` VALUES
   (1, 1,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,1,1,1,176000),
   (2, 1, 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,4,NULL,220000),
   (3, 1, '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true, 2, 3, NULL,220000),
-  (1, 2,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,2,NULL,90000),
-  (2, 2,'227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true,1,5,NULL,280000),
-  (3, 2, '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen',true,1,6,NULL,280000),
-  (1, 3,'Da Lat', true,2, 7, NULL,380000),
-  (2, 3, 'Da Lat', true,2, 8, NULL,380000),
-  (3, 3, 'Da Lat', true, 2, 9, NULL,380000),
-  (4, 3, 'Hoa An, Dau Giay, Dong Nai', true, 1, 10, NULL,90000);
+  (4, 2,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,2,NULL,90000),
+  (5, 2,'227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true,1,5,NULL,280000),
+  (6, 2, '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen',true,1,6,NULL,280000),
+  (7, 3,'Da Lat', true,2, 7, NULL,380000),
+  (8, 3, 'Da Lat', true,2, 8, NULL,380000),
+  (9, 3, 'Da Lat', true, 2, 9, NULL,380000),
+  (10, 3, 'Hoa An, Dau Giay, Dong Nai', true, 1, 10, NULL,90000);
 
 INSERT INTO `Passenger_ticket` VALUES
   (1,1,'A1'),
   (2,1,'A2'),
   (3,1,'B1'),
-  (2,2,'A1'),
-  (3,2,'A2'),
-  (1,3,'A1'),
-  (2,3,'A2'),
-  (3,3,'A3');
+  (5,2, 'A1'),
+  (6,2,'A2'),
+  (7,3,'A1'),
+  (8,3,'A2'),
+  (9,3,'A3');
+
 INSERT INTO `Luggage_ticket` VALUES
-  (1,2,5,'Rau xanh'),
-  (4,3,20,'Hang hoa');
+  (4,5,'Rau xanh'),
+  (9,20,'Hang hoa');
