@@ -44,9 +44,9 @@ CREATE TABLE `Telephone_staff`(
 CREATE TABLE `Tele_shift`(
   `shift_id` int(7) ZEROFILL NOT NULL AUTO_INCREMENT,
   `ee_id` int(5) ZEROFILL NOT NULL,
-  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN'),
-  `start` time,
-  `till`  time,
+  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN') NOT NULL,
+  `start` time NOT NULL,
+  `till`  time NOT NULL,
   PRIMARY KEY (`shift_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -54,8 +54,8 @@ CREATE TABLE `Tele_shift`(
 CREATE TABLE `Bus`(
   `bus_id` varchar(10) NOT NULL,
   `bustype` enum('NORMAL','LIMO','VIP'),
-  `total_seat` tinyint,
-  `maxload` int,
+  `total_seat` tinyint NOT NULL,
+  `maxload` int NOT NULL,
   `sleeper_type` enum('SINGLE','DOUBLE','CABIN'),
   PRIMARY KEY (`bus_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -98,6 +98,7 @@ CREATE TABLE `Trip`(
   `arrival_time`  timestamp NOT NULL,
   `bus_id` varchar(10) NOT NULL,
   `driver_id` int(5) ZEROFILL NOT NULL,
+  `empty_seats` tinyint NOT NULL,
   PRIMARY KEY (`trip_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -127,7 +128,7 @@ CREATE TABLE `Membership_level` (
 
 CREATE TABLE `Membership`(
   `member_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
-  `customer_id` int(11) ZEROFILL NOT NULL,
+  `customer_id` int(11) ZEROFILL NOT NULL UNIQUE,
   `start` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `till` datetime DEFAULT NULL,
   `level` tinyint(1) DEFAULT 1,
@@ -152,8 +153,8 @@ CREATE TABLE `Payment_methods` (
 CREATE TABLE `Ticket`(
   `ticket_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
   `trip_id` int(9) ZEROFILL NOT NULL,
-  `start_location` varchar(50),
-  `paid`     boolean,
+  `start_location` varchar(50) NOT NULL,
+  `paid`     boolean NOT NULL,
   `payment_method` tinyint(1),
   `customer_id` int(11) ZEROFILL NOT NULL,
   `program_id` int(9),
@@ -163,8 +164,7 @@ CREATE TABLE `Ticket`(
 
 CREATE TABLE `Passenger_ticket`(
   `ticket_id` int(11) ZEROFILL NOT NULL,
-  `trip_id` int(9) ZEROFILL NOT NULL,
-  `seat_num` varchar(4) NOT NULL,
+  `seat_num` tinyint NOT NULL,
   PRIMARY KEY (`ticket_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -220,30 +220,25 @@ ADD (CONSTRAINT  `fk_member_customerid` FOREIGN KEY (`customer_id`) REFERENCES `
 ALTER TABLE `Ticket`
 ADD ( CONSTRAINT  `fk_ticket_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
       CONSTRAINT  `fk_ticket_customerid` FOREIGN KEY (`customer_id`) REFERENCES `Customer` (`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-      CONSTRAINT  `fk_ticket_paymethod` FOREIGN KEY (`payment_method`) REFERENCES `Payment_methods` (`method_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
+      CONSTRAINT  `fk_ticket_paymethod` FOREIGN KEY (`payment_method`) REFERENCES `Payment_methods` (`method_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+      CONSTRAINT  `fk_ticket_programid` FOREIGN KEY (`program_id`) REFERENCES `Sales_promotion` (`program_id`) ON DELETE RESTRICT ON UPDATE RESTRICT);
 
 ALTER TABLE `Passenger_ticket`
-ADD (CONSTRAINT  `fk_passenger_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-	 CONSTRAINT  `fk_passenger_trip_id` FOREIGN KEY (`trip_id`) REFERENCES `Ticket` (`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE);
+ADD CONSTRAINT  `fk_passenger_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `Luggage_ticket`
 ADD CONSTRAINT  `fk_luggage_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-DROP TRIGGER IF EXISTS `CheckSeat`;
 DELIMITER $$
-CREATE  TRIGGER `CheckSeat` BEFORE INSERT ON `Passenger_ticket`
+CREATE  TRIGGER `EmptySeat` AFTER INSERT ON `Passenger_ticket`
 FOR EACH ROW
 BEGIN
-    IF 
-        EXISTS(  SELECT *
-                 FROM `Passenger_ticket`
-                 WHERE new.seat_num = `Passenger_ticket`.seat_num AND
-                       new.trip_id = `Passenger_ticket`.trip_id)
-    THEN
-        SIGNAL sqlstate '20000' SET MESSAGE_TEXT = 'DUPLICATED RESERVATION';
-    END IF; 
+	UPDATE `Trip` 
+    SET empty_seats = empty_seats -1
+    WHERE `Trip`.trip_id IN (SELECT trip_id FROM  `Ticket` WHERE ticket_id= new.ticket_id);
 END; $$
 DELIMITER ;
+
 /*INSERT DATA*/
 
 INSERT INTO `Employee` VALUES
@@ -340,9 +335,9 @@ INSERT INTO `Trip_schedule` VALUES
   (10, 5, 350000,80000, 'SUN', '12:00','20:45','LIMO');
 
 INSERT INTO `Trip` VALUES
-  (1,1,'2022-05-30 7:00:00','2022-05-30 15:30:00','51B-001.72',2),
-  (2,2,'2022-05-31 12:00:00','2022-05-31 20:30:00','60B-745.98',10),
-  (3,3,'2022-05-30 8:00:00','2022-05-30 22:00:00','51B-001.18',2);
+  (1,1,'2022-05-30 7:00:00','2022-05-30 15:30:00','51B-001.72',2,30),
+  (2,2,'2022-05-31 12:00:00','2022-05-31 20:30:00','60B-745.98',10,20),
+  (3,3,'2022-05-30 8:00:00','2022-05-30 22:00:00','51B-001.18',2,30);
   
 INSERT INTO `Trip_staff` VALUES
   (1, 1,4),
@@ -393,14 +388,14 @@ INSERT INTO `Ticket` VALUES
   (10, 3, 'Hoa An, Dau Giay, Dong Nai', true, 1, 10, NULL,90000);
 
 INSERT INTO `Passenger_ticket` VALUES
-  (1,1,'A1'),
-  (2,1,'A2'),
-  (3,1,'B1'),
-  (5,2, 'A1'),
-  (6,2,'A2'),
-  (7,3,'A1'),
-  (8,3,'A2'),
-  (9,3,'A3');
+  (1,'1'),
+  (2,'2'),
+  (3,'3'),
+  (5, '1'),
+  (6,'2'),
+  (7,'1'),
+  (8,'2'),
+  (9,'3');
 
 INSERT INTO `Luggage_ticket` VALUES
   (4,5,'Rau xanh'),
