@@ -20,13 +20,13 @@ CREATE TABLE `Employee` (
 CREATE TABLE `Driver`(
   `ee_id` int(5) ZEROFILL NOT NULL,
   `license_id` varchar(20) NOT NULL,
-  `exp_year` tinyint,
+  `exp_year` tinyint NOT NULL,
   PRIMARY KEY (`ee_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `Bus_staff`(
   `ee_id` int(5) ZEROFILL NOT NULL,
-  `vaccine`tinyint(1),
+  `vaccine`tinyint(1) NOT NULL,
   PRIMARY KEY (`ee_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -44,9 +44,9 @@ CREATE TABLE `Telephone_staff`(
 CREATE TABLE `Tele_shift`(
   `shift_id` int(7) ZEROFILL NOT NULL AUTO_INCREMENT,
   `ee_id` int(5) ZEROFILL NOT NULL,
-  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN'),
-  `start` time,
-  `till`  time,
+  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN') NOT NULL,
+  `start` time NOT NULL,
+  `till`  time NOT NULL,
   PRIMARY KEY (`shift_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -54,8 +54,8 @@ CREATE TABLE `Tele_shift`(
 CREATE TABLE `Bus`(
   `bus_id` varchar(10) NOT NULL,
   `bustype` enum('NORMAL','LIMO','VIP'),
-  `total_seat` tinyint,
-  `maxload` int,
+  `total_seat` tinyint NOT NULL,
+  `maxload` int NOT NULL,
   `sleeper_type` enum('SINGLE','DOUBLE','CABIN'),
   PRIMARY KEY (`bus_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -95,9 +95,9 @@ CREATE TABLE `Trip`(
   `trip_id` int(9) ZEROFILL NOT NULL AUTO_INCREMENT,
   `sched_id` int(2) ZEROFILL NOT NULL,
   `departure_time`timestamp NOT NULL,
-  `arrival_time`  timestamp NOT NULL,
+  `arrival_time`  timestamp,
   `bus_id` varchar(10) NOT NULL,
-  `driver_id` int(5) ZEROFILL NOT NULL,
+  `driver_id` int(5) ZEROFILL,
   `empty_seats` tinyint NOT NULL,
   PRIMARY KEY (`trip_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -105,7 +105,7 @@ CREATE TABLE `Trip`(
 CREATE TABLE `Trip_staff`(
   `staff_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
   `trip_id` int(9) ZEROFILL NOT NULL,
-  `ee_id` int(5) ZEROFILL NOT NULL,
+  `ee_id` int(5) ZEROFILL ,
   PRIMARY KEY ( `staff_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -130,9 +130,9 @@ CREATE TABLE `Membership`(
   `member_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) ZEROFILL NOT NULL UNIQUE,
   `start` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-  `till` datetime DEFAULT NULL,
-  `level` tinyint(1) DEFAULT 1,
-  `points` int DEFAULT 0,
+  `end` datetime DEFAULT NULL,
+  `level` tinyint(1) DEFAULT 1 NOT NULL,
+  `points` int DEFAULT 0 NOT NULL,
   PRIMARY KEY (`member_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -141,6 +141,8 @@ CREATE TABLE `Sales_promotion`(
   `description` varchar(100),
   `discount_rate` float(5, 2) NOT NULL,
   `require_level` tinyint(1) DEFAULT 0,
+  `start` timestamp NOT NULL,
+  `end` timestamp NOT NULL,
   PRIMARY KEY (`program_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -182,12 +184,12 @@ ALTER TABLE `Employee`
 ADD CONSTRAINT  `fk_ee_managerid` FOREIGN KEY (`manager_id`) REFERENCES `Manager` (`ee_id`) ON DELETE SET NULL;
   
 ALTER TABLE `Driver`
-ADD ( CONSTRAINT  `fk_driver_eeid` FOREIGN KEY (`ee_id`) REFERENCES `Employee` (`ee_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+ADD ( CONSTRAINT  `fk_driver_eeid` FOREIGN KEY (`ee_id`) REFERENCES `Employee` (`ee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
       CONSTRAINT `chk_exp_driver` CHECK (`exp_year`>=5),
       CONSTRAINT `chk_license_driver` CHECK (`license_id`LIKE 'E%' OR `license_id`LIKE 'F%') );
 
 ALTER TABLE `Bus_staff`
-ADD ( CONSTRAINT  `fk_staff_eeid` FOREIGN KEY (`ee_id`) REFERENCES `Employee` (`ee_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+ADD ( CONSTRAINT  `fk_staff_eeid` FOREIGN KEY (`ee_id`) REFERENCES `Employee` (`ee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
       CONSTRAINT `chk_require_staff` CHECK (`vaccine`>=2));
 
 ALTER TABLE `Manager`
@@ -207,12 +209,12 @@ ADD CONSTRAINT  `fk_sched_routeid` FOREIGN KEY (`route_id`) REFERENCES `Route` (
 
 ALTER TABLE `Trip`
 ADD ( CONSTRAINT  `fk_trip_routeid` FOREIGN KEY (`sched_id`) REFERENCES `Trip_schedule` (`sched_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-      CONSTRAINT  `fk_trip_busid` FOREIGN KEY (`bus_id`) REFERENCES `Bus` (`bus_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-	  CONSTRAINT  `fk_trip_driverid` FOREIGN KEY (`driver_id`) REFERENCES `Driver` (`ee_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
+      CONSTRAINT  `fk_trip_busid` FOREIGN KEY (`bus_id`) REFERENCES `Bus` (`bus_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+	    CONSTRAINT  `fk_trip_driverid` FOREIGN KEY (`driver_id`) REFERENCES `Driver` (`ee_id`) ON DELETE SET NULL);
 
 ALTER TABLE `Trip_staff`
 ADD ( CONSTRAINT  `fk_tripstaff_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-      CONSTRAINT  `fk_tripstaff_driverid` FOREIGN KEY (`ee_id`) REFERENCES `Bus_staff` (`ee_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
+      CONSTRAINT  `fk_tripstaff_eeid` FOREIGN KEY (`ee_id`) REFERENCES `Bus_staff` (`ee_id`) ON DELETE SET NULL);
   
 ALTER TABLE `Membership`
 ADD (CONSTRAINT  `fk_member_customerid` FOREIGN KEY (`customer_id`) REFERENCES `Customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -220,9 +222,9 @@ ADD (CONSTRAINT  `fk_member_customerid` FOREIGN KEY (`customer_id`) REFERENCES `
   
 ALTER TABLE `Ticket`
 ADD ( CONSTRAINT  `fk_ticket_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-      CONSTRAINT  `fk_ticket_customerid` FOREIGN KEY (`customer_id`) REFERENCES `Customer` (`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-      CONSTRAINT  `fk_ticket_paymethod` FOREIGN KEY (`payment_method`) REFERENCES `Payment_methods` (`method_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-      CONSTRAINT  `fk_ticket_programid` FOREIGN KEY (`program_id`) REFERENCES `Sales_promotion` (`program_id`) ON DELETE RESTRICT ON UPDATE RESTRICT);
+      CONSTRAINT  `fk_ticket_customerid` FOREIGN KEY (`customer_id`) REFERENCES `Customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+      CONSTRAINT  `fk_ticket_paymethod` FOREIGN KEY (`payment_method`) REFERENCES `Payment_methods` (`method_id`) ON DELETE SET NULL, 
+      CONSTRAINT  `fk_ticket_programid` FOREIGN KEY (`program_id`) REFERENCES `Sales_promotion` (`program_id`) ON DELETE SET NULL);
 
 ALTER TABLE `Passenger_ticket`
 ADD CONSTRAINT  `fk_passenger_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -370,7 +372,7 @@ INSERT INTO `Membership` VALUES
   (2,10,'2019-02-12 15:30:00', '2024-02-12 15:30:00',1,30);
   
 INSERT INTO `Sales_promotion` VALUES
-  (1,'SummerSale', 0.2, 2);
+  (1,'SummerSale', 0.2, 2, '2022-05-01 00:00:00', '2022-06-01 00:00:00');
 
 INSERT INTO `Payment_methods` VALUES  
   (1,'Transfer'),
@@ -378,15 +380,15 @@ INSERT INTO `Payment_methods` VALUES
   
 INSERT INTO `Ticket` VALUES
   (1, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,1,1,1,176000),
-  (2, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,4,NULL,220000),
-  (3, 1, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true, 2, 3, NULL,220000),
-  (4, 2, 'Luggage' ,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,2,NULL,90000),
-  (5, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true,1,5,NULL,280000),
-  (6, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen',true,1,6,NULL,280000),
-  (7, 3, 'Passenger', 'Da Lat', true,2, 7, NULL,380000),
-  (8, 3, 'Passenger', 'Da Lat', true,2, 8, NULL,380000),
-  (9, 3, 'Passenger', 'Da Lat', true, 2, 9, NULL,380000),
-  (10, 3, 'Luggage', 'Hoa An, Dau Giay, Dong Nai', true, 1, 10, NULL,90000);
+  (2, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,4,1,220000),
+  (3, 1, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true, 2, 3, 1,220000),
+  (4, 2, 'Luggage' ,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,2,1,90000),
+  (5, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true,1,5,1,280000),
+  (6, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen',true,1,6,1,280000),
+  (7, 3, 'Passenger', 'Da Lat', true,2, 7, 1,380000),
+  (8, 3, 'Passenger', 'Da Lat', true,2, 8, 1,380000),
+  (9, 3, 'Passenger', 'Da Lat', true, 2, 9, 1,380000),
+  (10, 3, 'Luggage', 'Hoa An, Dau Giay, Dong Nai', true, 1, 10, 1,90000);
 
 INSERT INTO `Passenger_ticket` VALUES
   (1,'1'),
