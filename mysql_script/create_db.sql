@@ -44,9 +44,9 @@ CREATE TABLE `Telephone_staff`(
 CREATE TABLE `Tele_shift`(
   `shift_id` int(7) ZEROFILL NOT NULL AUTO_INCREMENT,
   `ee_id` int(5) ZEROFILL NOT NULL,
-  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN') NOT NULL,
-  `start` time NOT NULL,
-  `till`  time NOT NULL,
+  `date` enum('MON','TUE','WED','THU','FRI','SAT','SUN'),
+  `start` time,
+  `till`  time,
   PRIMARY KEY (`shift_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -54,8 +54,8 @@ CREATE TABLE `Tele_shift`(
 CREATE TABLE `Bus`(
   `bus_id` varchar(10) NOT NULL,
   `bustype` enum('NORMAL','LIMO','VIP'),
-  `total_seat` tinyint NOT NULL,
-  `maxload` int NOT NULL,
+  `total_seat` tinyint,
+  `maxload` int,
   `sleeper_type` enum('SINGLE','DOUBLE','CABIN'),
   PRIMARY KEY (`bus_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -153,6 +153,7 @@ CREATE TABLE `Payment_methods` (
 CREATE TABLE `Ticket`(
   `ticket_id` int(11) ZEROFILL NOT NULL AUTO_INCREMENT,
   `trip_id` int(9) ZEROFILL NOT NULL,
+  `ticket_type` enum('Passenger','Luggage') NOT NULL,
   `start_location` varchar(50) NOT NULL,
   `paid`     boolean NOT NULL,
   `payment_method` tinyint(1),
@@ -376,16 +377,16 @@ INSERT INTO `Payment_methods` VALUES
   (2,'Cash');
   
 INSERT INTO `Ticket` VALUES
-  (1, 1,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,1,1,1,176000),
-  (2, 1, 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,4,NULL,220000),
-  (3, 1, '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true, 2, 3, NULL,220000),
-  (4, 2,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,2,NULL,90000),
-  (5, 2,'227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true,1,5,NULL,280000),
-  (6, 2, '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen',true,1,6,NULL,280000),
-  (7, 3,'Da Lat', true,2, 7, NULL,380000),
-  (8, 3, 'Da Lat', true,2, 8, NULL,380000),
-  (9, 3, 'Da Lat', true, 2, 9, NULL,380000),
-  (10, 3, 'Hoa An, Dau Giay, Dong Nai', true, 1, 10, NULL,90000);
+  (1, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,1,1,1,176000),
+  (2, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,4,NULL,220000),
+  (3, 1, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true, 2, 3, NULL,220000),
+  (4, 2, 'Luggage' ,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,2,NULL,90000),
+  (5, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true,1,5,NULL,280000),
+  (6, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen',true,1,6,NULL,280000),
+  (7, 3, 'Passenger', 'Da Lat', true,2, 7, NULL,380000),
+  (8, 3, 'Passenger', 'Da Lat', true,2, 8, NULL,380000),
+  (9, 3, 'Passenger', 'Da Lat', true, 2, 9, NULL,380000),
+  (10, 3, 'Luggage', 'Hoa An, Dau Giay, Dong Nai', true, 1, 10, NULL,90000);
 
 INSERT INTO `Passenger_ticket` VALUES
   (1,'1'),
