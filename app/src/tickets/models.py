@@ -25,11 +25,11 @@ class Ticket(models.Model):
         db_column='trip_id',related_name='tickets')
     start_location = models.CharField(max_length=50)
     paid = models.BooleanField()
-    payment_method = models.ForeignKey(PaymentMethods, on_delete=models.RESTRICT,
+    payment_method = models.ForeignKey(PaymentMethods, on_delete=models.SET_NULL,
         db_column='payment_method',null=True,blank=True,default=None)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE,
         db_column='customer_id',related_name='tickets')
-    program = models.ForeignKey(SalesPromotion, on_delete=models.RESTRICT,
+    program = models.ForeignKey(SalesPromotion, on_delete=models.SET_NULL,
         db_column='program_id',null=True,blank=True,default=None)
     total_cost = models.DecimalField(max_digits=10,decimal_places=2)
 

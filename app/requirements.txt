@@ -3,4 +3,6 @@ pyyaml
 requests
 django-cors-headers
 Pillow
-mysqlclient 
+mysqlclient
+crispy-bootstrap5==0.6
+django-crispy-forms==1.14.0

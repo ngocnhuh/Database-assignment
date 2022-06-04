@@ -38,10 +38,9 @@ class Membership(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE,
         db_column='customer_id',related_name='membership')
     start = models.DateTimeField(auto_now_add=True,blank=True)
-    till = models.DateTimeField(null=True,blank=True,default=None)
-    level = models.ForeignKey(MembershipLevel, on_delete=models.RESTRICT,
-        null=True,blank=True,default=1,db_column='level')
-    points = models.IntegerField(null=True,blank=True,default=0)
+    end = models.DateTimeField(null=True,blank=True,default=None)
+    level = models.ForeignKey(MembershipLevel, on_delete=models.RESTRICT,default=1,db_column='level')
+    points = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.member_id:011d} {self.customer_id}'
@@ -56,6 +55,8 @@ class SalesPromotion(models.Model):
     description = models.CharField(max_length=100,null=True,blank=True,default=None)
     discount_rate = models.DecimalField(max_digits=5,decimal_places=2)
     require_level = models.IntegerField(blank=True,default=0)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
 
     def __str__(self):
         return f'{self.program_id:09d}'

@@ -1,0 +1,30 @@
+{% load tag_extras %}
+<h5>Shift schedule</h5>
+{% if shifts %}
+    <div class="row">
+        <div class="col col-lg-10">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        {% comment %} <th scope="col">ID</th> {% endcomment %}
+                        <th scope="col">Date</th>
+                        <th scope="col">Start</th>
+                        <th scope="col">Till</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in shifts %}
+                        <tr>
+                            {% comment %} <td scope="row">{{ s.shift_id|stringformat:"07d" }}</td> {% endcomment %}
+                            <td>{{ s.date | date_decode }}</td>
+                            <td>{{ s.start }}</td>
+                            <td>{{ s.till}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <p>Empty :(</p>
+{% endif %}

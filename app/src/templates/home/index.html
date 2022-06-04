@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Home Page
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    <div class="container">
+        <h4>This is home page</h4>
+        <ul>
+            <li><a href="{% url 'employees:index' %}">Employees App</a></li>
+        </ul>
+    </div>
+{% endblock content %}

@@ -1,0 +1,25 @@
+<h5>Sub-employee</h5>
+{% if emps %}
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-dark">
+                <th scope="col">ID</th>
+                <th scope="col">Firstname</th>
+                <th scope="col">Lastname</th>
+                <th scope="col">Position</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in emps %}
+                <tr onclick="window.location='{% url 'employees:detail' e.ee_id %}';">
+                    <td scope="row">{{ e.ee_id|stringformat:"05d" }}</td>
+                    <td>{{ e.fname }}</td>
+                    <td>{{ e.lname }}</td>
+                    <td>{{ e.job_type | title}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>There is no sub-employee here :(</p>
+{% endif %}

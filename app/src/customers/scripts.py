@@ -9,7 +9,7 @@ for e in Customer.objects.all()[:3]:
 print('\nMEMBERSHIP')
 for e in Membership.objects.all()[:3]:
     print(f'{e.member_id} | {e.customer} | {e.start} \
-| {e.till} | {e.level} | {e.points}')
+| {e.end} | {e.level} | {e.points}')
 
 print('\nMEMBERSHIP LEVEL')
 for e in MembershipLevel.objects.all()[:3]:
@@ -17,4 +17,5 @@ for e in MembershipLevel.objects.all()[:3]:
 
 print('\nSALES PROMOTION')
 for e in SalesPromotion.objects.all()[:3]:
-    print(f'{e.program_id} | {e.description} | {e.discount_rate} | {e.require_level}')
+    print(f'{e.program_id} | {e.description} | {e.discount_rate} | {e.require_level}\
+{e.start} | {e.end}')

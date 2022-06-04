@@ -1,0 +1,24 @@
+<!-- Detal Update View -->
+{% extends 'base.html' %}
+{% load tag_extras crispy_forms_tags %}
+
+{% block title %}
+    Employees Detail
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <h3>{{ job_type | title }}</h3>
+        {% crispy form %}
+        <hr class="bg-dark border-2 border-top border-dark">
+        {% if job_type == 'manager' %}
+            {% emp_inline emp %}
+        {% elif job_type == 'driver' or job_type == 'bus staff' %}
+            {% trip_inline emp %}
+        {% elif job_type == 'telephone staff'%}
+            {% shift_inline emp %}
+        {% endif %}
+
+    {% end_main_ctn %}
+{% endblock content %}
