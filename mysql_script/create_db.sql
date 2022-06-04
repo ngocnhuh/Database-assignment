@@ -303,7 +303,16 @@ DELIMITER ;
 
 
 -- CALL insertCustomerData('Vo', 'Phan Anh Quan', '2010-12-26', '09211782393', '124 Kha Van Can BINH DUONG', 'vophananhquan@gmail.com');
+DROP PROCEDURE IF EXISTS deleteCustomerData;
+DELIMITER $$
+CREATE PROCEDURE deleteCustomerData (IN customer_id_input INT)
+BEGIN
+	DELETE FROM Customer WHERE customer_id = customer_id_input;
+    -- UPDATE Customer-- 
+    -- SET NULL WHERE-- 
+END $$
 
+DELIMITER ;
 
 
 
