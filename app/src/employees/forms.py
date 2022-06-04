@@ -26,7 +26,6 @@ class EmployeeForm(forms.ModelForm):
         return data
     
     
-
 class ManagerForm(EmployeeForm):
     class Meta:
         model = Manager
@@ -47,9 +46,11 @@ class ManagerForm(EmployeeForm):
                     'back','Back',
                     css_class='btn btn-secondary',
                     onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                )
+                ),
+                css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
+
 
 class DriverForm(EmployeeForm):
     class Meta:
@@ -72,7 +73,8 @@ class DriverForm(EmployeeForm):
                     'back','Back',
                     css_class='btn btn-secondary',
                     onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                )
+                ),
+                css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
 
@@ -97,7 +99,8 @@ class BusStaffForm(EmployeeForm):
                     'back','Back',
                     css_class='btn btn-secondary',
                     onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                )
+                ),
+                css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
 
@@ -122,6 +125,17 @@ class TelephoneStaffForm(EmployeeForm):
                     'back','Back',
                     css_class='btn btn-secondary',
                     onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                )
+                ),
+                css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
+
+
+class TeleShiftForm(forms.ModelForm):
+    class Meta:
+        model = TeleShift
+        fields = ['date','start','till']
+
+    def __init__(self,*args, **kwargs):
+        super(TeleShiftForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()

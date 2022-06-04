@@ -112,9 +112,6 @@ class Trip(models.Model):
     @property
     def is_due(self):
         today = datetime.now()
-        print(self.departure_time.time())
-        print(today.time())
-        print(self.departure_time.time() < today.time())
         return self.departure_time.date() < today.date() or \
             (self.departure_time.date() == today.date() and self.departure_time.time() < today.time())
 

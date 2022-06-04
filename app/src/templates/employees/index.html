@@ -9,7 +9,22 @@
 {% block content %}
     {% include 'components/navbar.html' %}
     {% main_ctn %}
-        <h3>Employees</h3>
+        <div class="row justify-content-between">
+            <h3 class='col-6'>Employees</h3>
+            <div class="col-6">
+                <div class="btn-group btn-sm float-end" role="group">
+                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Add employee
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                        <li><a class="dropdown-item" href="{% url 'employees:manager_create' %}">Manager</a></li>
+                        <li><a class="dropdown-item" href="{% url 'employees:driver_create' %}">Driver</a></li>
+                        <li><a class="dropdown-item" href="{% url 'employees:bus_staff_create' %}">Bus Staff</a></li>
+                        <li><a class="dropdown-item" href="{% url 'employees:telephone_staff_create' %}">Telephone Staff</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         {% if emps %}
             <table class="table table-hover">
                 <thead>
@@ -32,7 +47,7 @@
                 </tbody>
             </table>
         {% else %}
-            <p>There is no employee here :(</p>
+            <div>There is no employee here :(</div>
         {% endif %}
     {% end_main_ctn %}
 {% endblock content %}

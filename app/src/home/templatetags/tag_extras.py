@@ -4,6 +4,7 @@ register = template.Library()
 from django.utils.html import format_html
 
 from employees.models import *
+from employees.forms import *
 
 
 @register.filter
@@ -42,7 +43,12 @@ def emp_inline(manager):
 @register.inclusion_tag("employees/shift_inline.html")
 def shift_inline(tele_staff):
     shifts = TeleShift.objects.filter(ee=tele_staff.ee_id)
-    return {'shifts':shifts}
+    update_forms = [TeleShiftForm(instance=s) for s in shifts]
+    return {
+        'ee_id':tele_staff.ee_id,
+        'shifts':zip(update_forms,shifts),
+        'create_form':TeleShiftForm,
+    }
 
 
 @register.inclusion_tag("trips/trip_inline.html")

@@ -108,6 +108,6 @@ class TeleShift(models.Model):
     shift_id = models.BigAutoField(primary_key=True)
     ee = models.ForeignKey('employees.TelephoneStaff',
         on_delete=models.CASCADE,db_column='ee_id',unique=False)
-    date = models.TextField(max_length=3,choices=DateChoices.choices)
+    date = models.TextField(max_length=3,choices=DateChoices.choices,blank=False)
     start = models.TimeField()
     till = models.TimeField()
