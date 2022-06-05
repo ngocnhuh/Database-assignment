@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 from employees.models import Driver,BusStaff
 
@@ -96,17 +97,23 @@ class Trip(models.Model):
     sched = models.ForeignKey(TripSchedule, on_delete=models.RESTRICT,
         db_column='sched_id',related_name='trips')
     departure_time = models.DateTimeField()
-    arrival_time = models.DateTimeField()
-    bus = models.ForeignKey(Bus, on_delete=models.RESTRICT,
+    arrival_time = models.DateTimeField(null=True,blank=True,default=None)
+    bus = models.ForeignKey(Bus, on_delete=models.DO_NOTHING,
         db_column='bus_id',related_name='trips')
-    driver = models.ForeignKey(Driver, on_delete=models.RESTRICT,
-        db_column='driver_id',related_name='trips')
+    driver = models.ForeignKey(Driver, on_delete=models.SET_NULL,
+        db_column='driver_id',related_name='trips',null=True)
     trip_staffs = models.ManyToManyField(BusStaff,through='TripStaff',
         related_name='trips')
     empty_seats = models.IntegerField()
 
     def __str__(self):
         return f'{self.trip_id:011d}'
+
+    @property
+    def is_due(self):
+        today = datetime.now()
+        return self.departure_time.date() < today.date() or \
+            (self.departure_time.date() == today.date() and self.departure_time.time() < today.time())
 
 
 class TripStaff(models.Model):
@@ -117,5 +124,5 @@ class TripStaff(models.Model):
     staff_id = models.BigAutoField(primary_key=True)
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE,
         db_column='trip_id')
-    ee = models.ForeignKey(BusStaff, on_delete=models.RESTRICT,
-        db_column='ee_id')
+    ee = models.ForeignKey(BusStaff, on_delete=models.SET_NULL,
+        db_column='ee_id',null=True)

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load tag_extras crispy_forms_tags %}
+
+{% block title %}
+    Employees Create
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+    <h3>Create {{ job_type | title }}</h3>
+    {% crispy form %}
+    {% end_main_ctn %}
+{% endblock content %}

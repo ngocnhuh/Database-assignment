@@ -1,0 +1,78 @@
+{% load tag_extras crispy_forms_tags %}
+<h5>
+    Shift schedule
+    <button type="button" 
+        class="btn btn-outline-primary btn-sm" 
+        data-bs-toggle="modal" 
+        data-bs-target="#createModal"
+        style='border-radius:50%;transform: scale(0.8);'>
+        <i class="fa-solid fa-plus"></i>
+    </button>
+</h5>
+
+{% if shifts %}
+    <div class="row">
+        <div class="col col-lg-10">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        {% comment %} <th scope="col">ID</th> {% endcomment %}
+                        <th scope="col">Date</th>
+                        <th scope="col">Start</th>
+                        <th scope="col">Till</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f,s in shifts %}
+
+                        <tr data-bs-toggle="modal" data-bs-target="#updateModa{{s.shift_id}}">
+                            {% comment %} <td scope="row">{{ s.shift_id|stringformat:"07d" }}</td> {% endcomment %}
+                            <td>{{ s.date | date_decode }}</td>
+                            <td>{{ s.start }}</td>
+                            <td>{{ s.till}}</td>
+                        </tr>
+
+                        <div class="modal fade" id="updateModa{{s.shift_id}}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Update Shift {{s.shift_id}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="#" method="post">
+                                            {{ f | crispy }}
+                                            <button type="submit" class="btn btn-primary float-end">Save</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div>Empty :(</div>
+{% endif %}
+
+<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Shift</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id='create_form' action="#" method="post">
+                    {{ create_form | crispy }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" id="create_btn" class="btn btn-primary float-end">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

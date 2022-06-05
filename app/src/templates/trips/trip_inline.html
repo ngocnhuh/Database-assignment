@@ -1,0 +1,30 @@
+{% load tz %}
+<h5>Trip schedule</h5>
+{% if trips %}
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-dark">
+                <th scope="col">Bus id</th>
+                <th scope="col">Departure Time</th>
+                <th scope="col">Arrival Time</th>
+                <th scope="col">State</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in trips %}
+                <tr {% if t.is_due %}class="table-secondary"{% endif %}>
+                    <td>{{ t.bus_id }}</td>
+                    <td>{{ t.departure_time }}</td>
+                    <td>{{ t.arrival_time }}</td>
+                    {% if t.is_due %}
+                        <td>Over</td>
+                    {% else %}
+                        <td>Active</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Empty :(</p>
+{% endif %}
