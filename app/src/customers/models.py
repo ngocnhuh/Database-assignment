@@ -26,6 +26,7 @@ class MembershipLevel(models.Model):
     
     level_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50)
+    minimun_point = models.IntegerField()
 
     def __str__(self):
         return self.name

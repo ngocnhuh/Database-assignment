@@ -6,6 +6,7 @@ from django.utils.html import format_html
 from employees.models import *
 from employees.forms import *
 
+from customers.models import *
 
 @register.filter
 def date_decode(value):
@@ -55,3 +56,12 @@ def shift_inline(tele_staff):
 def trip_inline(bus_staff):
     trips = bus_staff.trips.order_by('-departure_time')
     return {'trips':trips}
+
+
+@register.inclusion_tag("customers/ms_level_inline.html")
+def ms_level_inline():
+    ms_levels = MembershipLevel.objects.all()
+    
+    return {
+        "ms_levels": ms_levels,
+    }
