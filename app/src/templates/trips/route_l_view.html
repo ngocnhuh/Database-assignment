@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load tag_extras %}
+
+{% block title %}
+    Route List
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>Route</h3>
+            <div class="col-6">
+                <a type="button" 
+                class="btn btn-primary float-end"
+                href="{% url 'trips:route_create' %}">Add Route</a>
+            </div>
+        </div>
+        {% if object_list %}
+            <table class="table table-hover table-responsive">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">ID</th>
+                        <th scope="col">Starting Point</th>
+                        <th scope="col">Destination</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in object_list %}
+                        <tr onclick="window.location='{% url 'trips:route_detail_update' o.route_id %}';">
+                            <td scope="row">{{ o.route_id }}</td>
+                            <td>{{ o.starting_point | title }}</td>
+                            <td>{{ o.destination | title }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div>There is no route here :(</div>
+        {% endif %}
+
+    {% end_main_ctn %}
+{% endblock content %}

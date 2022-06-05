@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Row,Column,Submit,Button
-from crispy_forms.bootstrap import InlineRadios,FormActions
+from crispy_forms.bootstrap import FormActions
 
 from datetime import datetime
 
