@@ -9,7 +9,16 @@
 {% block content %}
     {% include 'components/navbar.html' %}
     {% main_ctn %}
-        <h3>{{ job_type | title }}</h3>
+        <div class="row justify-content-between">
+            <h3 class='col-6'>
+                {{ job_type | title }} - <small>{{ emp.ee_id }}</small>
+                <a type="button" class="btn btn-link text-danger px-0"
+                href="javascript:location.href='{% url 'employees:delete' emp.ee_id %}';">Delete</a>
+            </h3>
+            <div class="col-6">
+                <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'employees:index' %}';">Back</a>
+            </div>
+        </div>
         {% crispy form %}
         <hr class="bg-dark border-2 border-top border-dark">
         {% if job_type == 'manager' %}

@@ -2,16 +2,16 @@
 {% load tag_extras crispy_forms_tags %}
 
 {% block title %}
-    Employees Create
+    Customers Create
 {% endblock title %}
 
 {% block content %}
     {% include 'components/navbar.html' %}
     {% main_ctn %}
     <div class="row justify-content-between">
-        <h3 class='col-6'>Create {{ job_type | title }}</h3>
+        <h3 class='col-6'>Create Customer</h3>
         <div class="col-6">
-            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'employees:index' %}';">Back</a>
+            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'customers:index' %}';">Back</a>
         </div>
     </div>
     {% crispy form %}

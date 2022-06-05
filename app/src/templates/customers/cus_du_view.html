@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load tag_extras crispy_forms_tags %}
+
+{% block title %}
+    Customer Detail
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>
+                Customer - <small>{{ cus_id }}</small>
+                <a type="button" class="btn btn-link text-danger px-0"
+                href="javascript:location.href='{% url 'customers:delete' cus_id %}';">Delete</a>
+            </h3>
+            <div class="col-6">
+                <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'customers:index' %}';">Back</a>
+            </div>
+        </div>
+        {% crispy form %}
+        
+        <hr class="bg-dark border-2 border-top border-dark">
+
+        <h5>
+            Membership
+            {% if has_ms %}
+                <a type="button" class="btn btn-link text-danger px-0"
+                href="javascript:location.href='{% url 'customers:ms_delete' ms_id %}';">Delete</a>
+            {% endif %}
+        </h5>
+        {% if not has_ms %}
+            <p>This customer don't have membership</p>
+        {% endif %}
+
+        {% crispy ms_form %}
+    {% end_main_ctn %}
+
+    <script>
+        document.querySelector('.cus-save-btn').setAttribute(
+            "name", "cus-save-btn"
+        ); 
+        document.querySelector(".ms-save-btn").setAttribute(
+            "name", "ms-save-btn"
+        ); 
+    </script>
+{% endblock content %}

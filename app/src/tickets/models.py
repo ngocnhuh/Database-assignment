@@ -23,7 +23,7 @@ class Ticket(models.Model):
     ticket_id = models.BigAutoField(primary_key=True)
     trip = models.ForeignKey(Trip, on_delete=models.RESTRICT,
         db_column='trip_id',related_name='tickets')
-    start_location = models.CharField(max_length=50)
+    start_location = models.CharField(max_length=100)
     paid = models.BooleanField()
     payment_method = models.ForeignKey(PaymentMethods, on_delete=models.SET_NULL,
         db_column='payment_method',null=True,blank=True,default=None)
