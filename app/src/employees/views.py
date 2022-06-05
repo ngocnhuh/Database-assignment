@@ -2,10 +2,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
 from django.views import View
-from django.views.generic import CreateView
-from django.template.context_processors import csrf
-from crispy_forms.utils import render_crispy_form
-import json
+from django.views.generic import CreateView,DeleteView
 
 from .models import *
 from .forms import *
@@ -112,6 +109,19 @@ class TelephoneStaffCreateView(CreateView):
         return context
 
 telephone_staff_create_view = TelephoneStaffCreateView.as_view()
+
+
+class EmployeeDeleteView(DeleteView):
+    model = Employee
+    template_name = 'employees/emp_d_view.html'
+    success_url = reverse_lazy('employees:index')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["job_type"] = self.get_object().job_type
+        return context
+    
+employee_delete_view = EmployeeDeleteView.as_view()
 
 
 def get_emp_form(request,instance,job_type):
