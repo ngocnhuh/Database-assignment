@@ -35,5 +35,5 @@ BEGIN
 END; $$
 DELIMITER ;
 
-CALL `AllStaffofTrip`(5);
-CALL `BestSellerTripSchedule`(2);
+/*CALL `AllStaffofTrip`(5);
+CALL `BestSellerTripSchedule`(2);*/

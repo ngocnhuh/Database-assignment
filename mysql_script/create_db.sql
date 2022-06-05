@@ -124,6 +124,7 @@ CREATE TABLE `Customer`(
 CREATE TABLE `Membership_level` (
   `level_id` tinyint(1) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
+  `minimun_point`int NOT NULL,
   PRIMARY KEY (`level_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -139,6 +140,7 @@ CREATE TABLE `Membership`(
 
 CREATE TABLE `Sales_promotion`(
   `program_id` int(9) NOT NULL AUTO_INCREMENT,
+  `discount_rate` float(5, 2) NOT NULL,
   `description` varchar(100),
   `require_level` tinyint(1) DEFAULT 0,
   `start` timestamp NOT NULL,
@@ -215,11 +217,14 @@ ADD ( CONSTRAINT  `fk_trip_routeid` FOREIGN KEY (`sched_id`) REFERENCES `Trip_sc
 ALTER TABLE `Trip_staff`
 ADD ( CONSTRAINT  `fk_tripstaff_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE,
       CONSTRAINT  `fk_tripstaff_eeid` FOREIGN KEY (`ee_id`) REFERENCES `Bus_staff` (`ee_id`) ON DELETE SET NULL);
-  
+
 ALTER TABLE `Membership`
 ADD (CONSTRAINT  `fk_member_customerid` FOREIGN KEY (`customer_id`) REFERENCES `Customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
      CONSTRAINT  `fk_member_level` FOREIGN KEY (`level`) REFERENCES `Membership_level` (`level_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
-  
+
+ALTER TABLE `Sales_promotion`
+ADD CONSTRAINT `chk_discountrate` CHECK (`discount_rate`< 1 AND `discount_rate`>0);
+
 ALTER TABLE `Ticket`
 ADD ( CONSTRAINT  `fk_ticket_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
       CONSTRAINT  `fk_ticket_customerid` FOREIGN KEY (`customer_id`) REFERENCES `Customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -313,11 +318,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-
-
-
-
 
 /*INSERT DATA*/
 
@@ -468,26 +468,26 @@ INSERT INTO `Customer` VALUES
   (10,'Le','Minh Cong','1982-05-22','0902005932','12 Le Duan, Tuy Hoa', 'minhcongth123@gmail.com');
 
 INSERT INTO `Membership_level` VALUES
-  (1,'Dong'),
-  (2,'Bac'),
-  (3,'Vang');
+  (1,'Dong',0),
+  (2,'Bac', 100),
+  (3,'Vang',200);
 
 INSERT INTO `Membership` VALUES
-  (1,1,'2020-01-01 12:00:00', '2025-01-01 12:00:00', 2,15000),
-  (2, 4, '2020-01-01 12:00:00', '2025-01-01 12:00:00', 3, 50000),
-  (3,10,'2019-02-12 15:30:00', '2024-02-12 15:30:00',1,3000);
+  (1,1,'2020-01-01 12:00:00', '2025-01-01 12:00:00', 2,150),
+  (2, 4, '2020-01-01 12:00:00', '2025-01-01 12:00:00', 3, 500),
+  (3,10,'2019-02-12 15:30:00', '2024-02-12 15:30:00',1,30);
   
 INSERT INTO `Sales_promotion` VALUES
-  (1,'SummerSale', 2, '2022-05-01 00:00:00', '2022-06-01 00:00:00');
+  (1, 0.2,'SummerSale', 2, '2022-05-01 00:00:00', '2022-06-01 00:00:00');
 
 INSERT INTO `Payment_methods` VALUES  
   (1,'Transfer'),
   (2,'Cash');
   
 INSERT INTO `Ticket` VALUES
-  (1, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,1,1,1,205000),
+  (1, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,1,1,1,176000),
   (2, 1, 'Passenger', 'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,3,1,220000),
-  (3, 1, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true, 2, 4, 1,170000),
+  (3, 1, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true, 2, 4, 1,176000),
   (4, 2, 'Luggage' ,'Ben xe Phu Lam, TP Tuy Hoa, Phu Yen',true,2,2,1,90000),
   (5, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen', true,1,5,1,280000),
   (6, 2, 'Passenger', '227 Nguyen Tat Thanh TP Tuy Hoa, Phu Yen',true,1,6,1,280000),
@@ -502,13 +502,13 @@ INSERT INTO `Ticket` VALUES
   (15, 6, 'Luggage', 'Hoa An, Dau Giay, Dong Nai ' ,true, 2, 8, 1, 80000),
   (16, 7, 'Passenger', 'Buu dien thanh pho Da Lat ', true, 1, 6, 1, 180000),
   (17, 7, 'Passenger', ' Buu dien thanh pho Da Lat', true, 2, 3, NULL, 180000),
-  (18, 8, 'Luggage', 'Buu dien thanh pho Da Lat', true, 1, 1, 1,65000 ),
-  (19, 8, 'Passenger','Hoa An, Dau Giay, Dong Nai', true, 2, 4, 1, 300000),
+  (18, 8, 'Luggage', 'Buu dien thanh pho Da Lat', true, 1, 1, 1,64000 ),
+  (19, 8, 'Passenger','Hoa An, Dau Giay, Dong Nai', true, 2, 4, 1, 280000),
   (20, 8, 'Luggage', 'Hoa An, Dau Giay, Dong Nai', true, 2, 7, 1, 80000),
   (21, 9, 'Passenger','Cho Dau Moi Tan Hoa 555 Pham Van Dong, Buon Ma Thuot',false, NULL, 2, NULL,300000),
   (22, 9,'Passenger','Cho Dau Moi Tan Hoa 555 Pham Van Dong, Buon Ma Thuot', true, 1, 1, NULL,300000),
   (23, 10,'Passenger','248 Le Duan, Phan Rang-Thap Cham, Ninh Thuan',true, 1,3, 1,180000),
-  (24, 11,'Luggage', 'Ben Xe Mien Dong, TPHCM', true, 2, 4, 1, 5000),
+  (24, 11,'Luggage', 'Ben Xe Mien Dong, TPHCM', true, 2, 4, 1, 44000),
   (25, 11,'Passenger','248 Le Duan, Phan Rang-Thap Cham, Ninh Thuan', true, 2, 5, 1,160000),
   (26, 11,'Passenger','248 Le Duan, Phan Rang-Thap Cham, Ninh Thuan', true, 2, 7, 1,160000),
   (27, 12, 'Passenger','138 Nguyen Cu Trinh, Quan 1, TPHCM',true, 1, 5, 1,350000),
