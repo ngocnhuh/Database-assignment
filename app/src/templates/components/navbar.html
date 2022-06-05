@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
     <div class="container">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="#">NHQN</a>
         <button
             class="navbar-toggler"
             type="button"
@@ -15,14 +15,14 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#"
+                    <a class="nav-link active" aria-current="page" href="{% url 'home:index' %}"
                         >Home</a
                     >
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" href="{% url 'employees:index' %}">Employee</a>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown disabled">
                     <a
                         class="nav-link dropdown-toggle"
                         href="#"
@@ -31,7 +31,7 @@
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                     >
-                        Dropdown
+                        Trip
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#">Action</a></li>
@@ -47,26 +47,9 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a
-                        class="nav-link disabled"
-                        href="#"
-                        tabindex="-1"
-                        aria-disabled="true"
-                        >Disabled</a
-                    >
+                    <a class="nav-link" href="{% url 'customers:index' %}">Customers</a>
                 </li>
             </ul>
-            <form class="d-flex">
-                <input
-                    class="form-control me-2"
-                    type="search"
-                    placeholder="Search"
-                    aria-label="Search"
-                />
-                <button class="btn btn-outline-success" type="submit">
-                    Search
-                </button>
-            </form>
         </div>
     </div>
 </nav>

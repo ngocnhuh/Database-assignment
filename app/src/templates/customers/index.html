@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load tag_extras %}
+
+{% block title %}
+    Customer List
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>Customer</h3>
+            <div class="col-6">
+                <a type="button" class="btn btn-primary float-end"href="{% url 'customers:create' %}">Add Customer</a>
+            </div>
+        </div>
+        {% if customers %}
+            <table class="table table-hover table-responsive">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">ID</th>
+                        <th scope="col">Firstname</th>
+                        <th scope="col">Lastname</th>
+                        <th scope="col">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in customers %}
+                        <tr onclick="window.location='{% url 'customers:detail_update' c.customer_id %}';">
+                            <td scope="row">{{ c.customer_id|stringformat:"011d" }}</td>
+                            <td>{{ c.fname }}</td>
+                            <td>{{ c.lname }}</td>
+                            <td>{{ c.email }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div>There is no customer here :(</div>
+        {% endif %}
+    {% end_main_ctn %}
+{% endblock content %}

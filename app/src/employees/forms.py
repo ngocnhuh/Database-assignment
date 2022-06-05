@@ -42,11 +42,6 @@ class ManagerForm(EmployeeForm):
 
             FormActions(
                 Submit('save','Save'),
-                Button(
-                    'back','Back',
-                    css_class='btn btn-secondary',
-                    onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                ),
                 css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
@@ -69,11 +64,6 @@ class DriverForm(EmployeeForm):
 
             FormActions(
                 Submit('save','Save'),
-                Button(
-                    'back','Back',
-                    css_class='btn btn-secondary',
-                    onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                ),
                 css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
@@ -95,11 +85,6 @@ class BusStaffForm(EmployeeForm):
 
             FormActions(
                 Submit('save','Save'),
-                Button(
-                    'back','Back',
-                    css_class='btn btn-secondary',
-                    onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                ),
                 css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
@@ -121,11 +106,6 @@ class TelephoneStaffForm(EmployeeForm):
 
             FormActions(
                 Submit('save','Save'),
-                Button(
-                    'back','Back',
-                    css_class='btn btn-secondary',
-                    onClick = f"javascript:location.href='{reverse_lazy('employees:index')}';"
-                ),
                 css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
