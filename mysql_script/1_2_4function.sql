@@ -39,32 +39,51 @@ BEGIN
   DECLARE total_cost_1 INT;
   DECLARE is_right BOOL;
   DECLARE my_level INT default -1;
+  DECLARE trip_id_1 INT;
+  DECLARE ticket_type_1 VARCHAR(20);
+  DECLARE price_1 INT;
+  DECLARE price_2 INT;
+  DECLARE sched_id_1 INT;
   DECLARE require_is INT;
   DECLARE discount FLOAT;
     
-  SELECT 	customer_id,program_id,total_cost
-		INTO customer_id_1,program_id_1,total_cost_1
+  SELECT 	customer_id,program_id,trip_id,ticket_type
+		INTO customer_id_1,program_id_1,trip_id_1,ticket_type_1
   FROM ticket
-  WHERE ticket_id_1=ticket_id;  
+  WHERE ticket_id_1=ticket_id;
+    
+  SELECT sched_id
+	  INTO sched_id_1
+	FROM trip
+  WHERE (trip_id_1 = trip_id);
+    
+  SELECT passenger_price,luggage_price
+  	INTO price_1,price_2
+	FROM trip_schedule
+  WHERE (sched_id_1 = sched_id);
+		
+  IF ticket_type_1 = 'Luggage' THEN
+		SET price_1 = price_2;
+	END IF;
     
   SELECT level
-	  INTO my_level
-  FROM membership
+		INTO my_level
+	FROM membership
   WHERE (customer_id_1 = membership.customer_id);
     
   SELECT discount_rate,require_level
-    INTO discount,require_is
+		INTO discount,require_is
 	FROM sales_promotion
-  WHERE (program_id = program_id_1);  
+	WHERE (program_id = program_id_1);
     
     
   IF my_level IS NULL THEN
-		RETURN total_cost_1;
+		RETURN price_1;
 	ELSEIF my_level >= require_is THEN
-		RETURN total_cost_1*(1-discount);
-	ELSE RETURN total_cost_1;
+		RETURN price_1*(1-discount);
+	ELSE RETURN price_1;
 	END IF;    
-  RETURN my_level;
+    RETURN price_1;
 END; $$
 DELIMITER ;
 
