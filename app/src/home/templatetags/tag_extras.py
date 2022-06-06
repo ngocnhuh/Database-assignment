@@ -24,9 +24,9 @@ def date_decode(value):
 
 
 @register.simple_tag()
-def main_ctn(extra_classes = ""):
+def main_ctn(extra_classes = "",max_width=900):
     return format_html(
-        f'<div class="container {extra_classes}" style="max-width:900px">'
+        f'<div class="container {extra_classes}" style="max-width:{max_width}px">'
     )
 
 
@@ -64,4 +64,12 @@ def ms_level_inline():
     
     return {
         "ms_levels": ms_levels,
+    }
+
+@register.inclusion_tag("trips/stop_inline.html")
+def stop_inline(route):
+    stops = route.stops.all()
+    
+    return {
+        "stops": stops,
     }

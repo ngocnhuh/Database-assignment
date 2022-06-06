@@ -1,0 +1,21 @@
+<h5>Stop</h5>
+{% if stops %}
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-dark">
+                <th scope="col">ID</th>
+                <th scope="col">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in stops %}
+                <tr>
+                    <td scope="row">{{ s.stop_id|stringformat:"05d" }}</td>
+                    <td>{{ s.stop_address }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>There is no stop here :(</p>
+{% endif %}

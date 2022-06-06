@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load tag_extras %}
+
+{% block title %}
+    Bus List
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>Bus</h3>
+            <div class="col-6">
+                <a type="button" 
+                class="btn btn-primary float-end"
+                href="{% url 'trips:bus_create' %}">Add Bus</a>
+            </div>
+        </div>
+        {% if object_list %}
+            <table class="table table-hover table-responsive">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">ID</th>
+                        <th scope="col">Bus Type</th>
+                        <th scope="col">Sleep Type</th>
+                        <th scope="col">Total Seat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in object_list %}
+                        <tr onclick="window.location='{% url 'trips:bus_detail_update' b.bus_id %}';">
+                            <td scope="row">{{ b.bus_id }}</td>
+                            <td>{{ b.bustype | title }}</td>
+                            <td>{{ b.sleeper_type | title }}</td>
+                            <td>{{ b.total_seat }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div>There is no bus here :(</div>
+        {% endif %}
+
+    {% end_main_ctn %}
+{% endblock content %}

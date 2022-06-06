@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load tag_extras crispy_forms_tags %}
+
+{% block title %}
+    Route Detail
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>
+                Route - <small>{{ route.route_id }}</small>
+                <button type="button" class="btn btn-link text-danger px-0"
+                onclick="window.location='{% url 'trips:route_delete' route.route_id %}';">Delete</butt>
+            </h3>
+            <div class="col-6">
+                <a type="button" 
+                class="btn btn-link float-end"
+                href="javascript:location.href='{% url 'trips:route_list' %}';">Back</a>
+            </div>
+        </div>
+        {% crispy form %}
+        
+        <hr class="bg-dark border-2 border-top border-dark">
+
+        {%stop_inline route%}
+    {% end_main_ctn %}
+{% endblock content %}

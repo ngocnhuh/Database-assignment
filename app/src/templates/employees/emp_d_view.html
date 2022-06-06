@@ -11,7 +11,7 @@
     <div class="row justify-content-between">
         <h3 class='col-6'>Delete {{ job_type | title }}</h3>
         <div class="col-6">
-            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'customers:index' %}';">Back</a>
+            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'employees:detail' object.ee_id %}';">Back</a>
         </div>
     </div>
     <form method="post">

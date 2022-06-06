@@ -2,21 +2,21 @@
 {% load tag_extras crispy_forms_tags %}
 
 {% block title %}
-    Customers Delete
+    Route Delete
 {% endblock title %}
 
 {% block content %}
     {% include 'components/navbar.html' %}
     {% main_ctn %}
     <div class="row justify-content-between">
-        <h3 class='col-6'>Delete Customer</h3>
+        <h3 class='col-6'>Delete Route</h3>
         <div class="col-6">
-            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'customers:detail_update' object.customer_id %}';">Back</a>
+            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'trips:route_detail_update' object.route_id %}';">Back</a>
         </div>
     </div>
     <form method="post">
         {% csrf_token %}
-        <p>Are you sure you want to delete Customer "{{ object }}"?</p>
+        <p>Are you sure you want to delete Route "{{ object }}"?</p>
         <input  class="btn btn-primary" type="submit" value="Confirm">
     </form>
     {% end_main_ctn %}
