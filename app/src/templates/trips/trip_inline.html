@@ -4,18 +4,20 @@
     <table class="table table-hover">
         <thead>
             <tr class="table-dark">
-                <th scope="col">Bus id</th>
-                <th scope="col">Departure Time</th>
-                <th scope="col">Arrival Time</th>
+                <th scope="col">Bus ID</th>
+                <th scope="col">Route</th>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
                 <th scope="col">State</th>
             </tr>
         </thead>
         <tbody>
             {% for t in trips %}
                 <tr {% if t.is_due %}class="table-secondary"{% endif %}>
-                    <td>{{ t.bus_id }}</td>
-                    <td>{{ t.departure_time }}</td>
-                    <td>{{ t.arrival_time }}</td>
+                    <td>{{ t.bus }}</td>
+                    <td>{{ t.sched.route | upper }}</td>
+                    <td>{{ t.departure_date }}</td>
+                    <td>{{ t.sched.departure_time | date:"H:i:s"}} - {{ t.sched.arrival_time | date:"H:i:s"}}</td>
                     {% if t.is_due %}
                         <td>Over</td>
                     {% else %}

@@ -7,6 +7,7 @@ from employees.models import *
 from employees.forms import *
 
 from customers.models import *
+from trips.models import Route
 
 @register.filter
 def date_decode(value):
@@ -54,7 +55,7 @@ def shift_inline(tele_staff):
 
 @register.inclusion_tag("trips/trip_inline.html")
 def trip_inline(bus_staff):
-    trips = bus_staff.trips.order_by('-departure_time')
+    trips = bus_staff.trips.order_by('-departure_date')
     return {'trips':trips}
 
 
@@ -69,7 +70,13 @@ def ms_level_inline():
 @register.inclusion_tag("trips/stop_inline.html")
 def stop_inline(route):
     stops = route.stops.all()
-    
+    return {"stops": stops}
+
+@register.inclusion_tag("trips/trip_search_form.html")
+def trip_search_form():
+    route_starts = Route.objects.values_list('starting_point',flat=True).distinct()
+    route_dests = Route.objects.values_list('destination',flat=True).distinct()
     return {
-        "stops": stops,
+        "route_starts": route_starts,
+        "route_dests": route_dests
     }

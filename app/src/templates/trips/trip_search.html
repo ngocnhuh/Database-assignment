@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% load tag_extras%}
+
+{% block title %}
+    Trip List
+{% endblock title %}
+
+{% block content %}
+    <style>
+        .sortable th::after {
+            font-size: 0.9em;
+            color: white;
+            content: ' \025B8';
+        }
+        .sortable th.dir-d::after {
+            color: inherit;
+            content: ' \025BE';
+        }
+        .sortable th.dir-u::after {
+            color: inherit;
+            content: ' \025B4';
+        }
+    </style>
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>Trip</h3>
+            <div class="col-6">
+                <a type="button" 
+                class="btn btn-primary float-end"
+                href="">Add Trip</a>
+            </div>
+        </div>
+
+        {% trip_search_form %}
+
+        <table id='trip-table' class="sortable table table-hover table-responsive">
+            <thead>
+                <tr class="table-dark">
+                    <th scope="col">ID</th>
+                    <th scope="col">Route</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    {% end_main_ctn %}
+
+    <script>
+        const down_class = " dir-d "
+        const up_class = " dir-u "
+        const regex_dir = / dir-(u|d) /
+        const searchForm = document.querySelector('#search-form')
+        const table = document.querySelector('.sortable')
+        const tr = document.querySelector('.sortable thead tr')
+        const th_list = document.querySelectorAll('.sortable thead th')
+
+        th_list.forEach(item => {
+            item.addEventListener('click',sortable)
+        })
+
+        searchForm.addEventListener('submit',(event)=>{
+            event.preventDefault()
+            let searchData = new FormData(searchForm)
+            let loginObjectData = Object.fromEntries(searchData)
+            let {date,route_start,route_dest} = loginObjectData
+            loadData(date,route_start,route_dest)
+        })
+
+        loadData()
+        
+        function reClassify(element, dir) {
+            element.className = element.className.replace(regex_dir, "") + dir;
+        }
+
+        function renderTable(data) {
+            var nodes = tr.cells;
+            for (var i = 0; i < nodes.length; i++) {
+                reClassify(nodes[i], "");
+            }
+            var tableBody = document.querySelector('#trip-table tbody')
+            tableBody.innerHTML = ''
+            data.map((i) => {
+                tableBody.innerHTML += `
+                <tr>
+                    <td>${i.trip_id}</td>
+                    <td>${i.route_start} - ${i.route_dest}</td>
+                    <td>${i.departure_date}</td>
+                    <td>${i.departure_time} - ${i.arrival_time}</td>
+                </tr>
+                `
+            })
+        }
+        
+        function loadData(date='',route_start='',route_dest='') {
+            const options = {
+                "method": "GET",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+            }
+            url = `{% url 'api:trip_search_api' %}?date=${date}&route_start=${route_start}&route_dest=${route_dest}`
+            fetch(url,options)
+                .then(res => res.json())
+                .then(data => {
+                    renderTable(data)
+                })
+                .catch(e => {
+                    console.error(e)
+                })
+        }
+
+        function sortable(e) {
+            console.log(e.target)
+            var element = e.target;
+
+            function getValue(element) {
+                return element.innerText;
+            }
+    
+            var column_index;
+            var nodes = tr.cells;
+    
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i] === element) {
+                    column_index = i;
+                } else {
+                    reClassify(nodes[i], "");
+                }
+            }
+    
+            var dir = down_class;
+    
+            if (element.className.indexOf(down_class) !== -1) {
+                dir = up_class;
+            }
+    
+            reClassify(element, dir);
+    
+            var org_tbody = table.tBodies[0];
+    
+            var rows = [].slice.call(org_tbody.rows, 0);
+    
+            var reverse = dir === up_class;
+    
+            rows.sort(function (a, b) {
+                var x = getValue((reverse ? a : b).cells[column_index]);
+                var y = getValue((reverse ? b : a).cells[column_index]);
+                return isNaN(x - y) ? x.localeCompare(y) : x - y;
+            });
+            var clone_tbody = org_tbody.cloneNode();
+    
+            while (rows.length) {
+                clone_tbody.appendChild(rows.splice(0, 1)[0]);
+            }
+            table.replaceChild(clone_tbody, org_tbody);
+        }
+    </script>
+{% endblock content %}

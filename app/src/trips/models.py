@@ -101,8 +101,7 @@ class Trip(models.Model):
     trip_id = models.BigAutoField(primary_key=True)
     sched = models.ForeignKey(TripSchedule, on_delete=models.RESTRICT,
         db_column='sched_id',related_name='trips')
-    departure_time = models.DateTimeField()
-    arrival_time = models.DateTimeField(null=True,blank=True,default=None)
+    departure_date = models.DateField()
     bus = models.ForeignKey(Bus, on_delete=models.DO_NOTHING,
         db_column='bus_id',related_name='trips')
     driver = models.ForeignKey(Driver, on_delete=models.SET_NULL,
@@ -117,8 +116,8 @@ class Trip(models.Model):
     @property
     def is_due(self):
         today = datetime.now()
-        return self.departure_time.date() < today.date() or \
-            (self.departure_time.date() == today.date() and self.departure_time.time() < today.time())
+        return self.departure_date < today.date() or \
+            (self.departure_date == today.date() and self.sched.departure_time < today.time())
 
 
 class TripStaff(models.Model):

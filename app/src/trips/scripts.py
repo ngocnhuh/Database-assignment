@@ -21,6 +21,6 @@ for b in Bus.objects.all()[:3]:
 
 print('\nTRIP')
 for t in Trip.objects.all()[:3]:
-    print(f'{t.trip_id} | {t.sched} | {t.departure_time} | \
-{t.arrival_time} | {t.bus} | {t.driver} | {t.empty_seats}')
+    print(f'{t.trip_id} | {t.sched} | {t.departure_date} | \
+{t.bus} | {t.driver} | {t.empty_seats}')
 

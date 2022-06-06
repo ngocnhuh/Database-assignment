@@ -121,3 +121,9 @@ class TripScheduleDeleteView(DeleteView):
     template_name = 'trips/sched_d_view.html'
     success_url = reverse_lazy('trips:sched_list')
 sched_delete_view = TripScheduleDeleteView.as_view()
+
+
+class TripSearchView(View):
+    def get(self,request):
+        return render(request, 'trips/trip_search.html')
+trip_search_view = TripSearchView.as_view()

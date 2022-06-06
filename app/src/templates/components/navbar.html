@@ -20,7 +20,7 @@
                     >
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'employees:index' %}">Employee</a>
+                    <a class="nav-link" href="{% url 'employees:index' %}">Employees</a>
                 </li>
                 <li class="nav-item dropdown disabled">
                     <a
@@ -31,16 +31,13 @@
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                     >
-                        Trip
+                        Trips
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'trips:trip_search' %}">Trip</a></li>
                         <li><a class="dropdown-item" href="{% url 'trips:bus_list' %}">Bus</a></li>
-                        <li>
-                            <a class="dropdown-item" href="{% url 'trips:route_list' %}">Route</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{% url 'trips:sched_list' %}">Schedule</a>
-                        </li>
+                        <li><a class="dropdown-item" href="{% url 'trips:route_list' %}">Route</a></li>
+                        <li><a class="dropdown-item" href="{% url 'trips:sched_list' %}">Schedule</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
