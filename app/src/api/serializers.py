@@ -11,13 +11,19 @@ class TripSerializer(serializers.ModelSerializer):
             'route_dest',
             'departure_date',
             'departure_time',
-            'arrival_time'
+            'arrival_time',
+            'url',
         ]
 
     route_start = serializers.SerializerMethodField()
     route_dest  = serializers.SerializerMethodField()
     departure_time  = serializers.SerializerMethodField()
     arrival_time  = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name='trips:trip_detail_update',
+        lookup_field='trip_id',
+        lookup_url_kwarg='pk'
+    )
 
     def get_route_start(self,obj):
         return obj.sched.route.starting_point

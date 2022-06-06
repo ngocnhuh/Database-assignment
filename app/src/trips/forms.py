@@ -90,3 +90,35 @@ class TripScheduleForm(forms.ModelForm):
             )
         )
 
+
+class TripForm(forms.ModelForm):
+    class Meta:
+        model = Trip
+        fields = '__all__'
+
+    departure_date = forms.DateField(
+        widget=forms.DateInput(
+            attrs={'type':'date'}
+        )
+    )
+
+    empty_seats = forms.IntegerField(
+        required=False,
+        widget=forms.NumberInput(
+            attrs={'readonly':True}
+        )
+    )
+
+    def __init__(self,*args, **kwargs):
+        super(TripForm,self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(Column('sched'),Column('departure_date')),
+            Row(Column('driver',Row(Column('bus'),Column('empty_seats')),)
+                ,Column('trip_staffs')),
+            
+            FormActions(
+                Submit('save','Save',css_class='cus-save-btn'),
+                css_class='d-grid gap-2 d-flex justify-content-end'
+            )
+        )

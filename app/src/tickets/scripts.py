@@ -9,7 +9,7 @@ for p in PaymentMethods.objects.all()[:3]:
 print('\nTICKET')
 for t in Ticket.objects.all()[:3]:
     print(f'{t.ticket_id} | {t.trip} | {t.start_location} \
-| {t.paid} | {t.payment_method} | {t.customer} | {t.program} | {t.total_cost}')
+| {t.paid} | {t.payment_method} | {t.customer} | {t.program} | {t.total_cost} | {t.ticket_type}')
 
 print('\nPASSENGER TICKET')
 for t in PassengerTicket.objects.all()[:3]:

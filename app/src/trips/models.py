@@ -63,13 +63,15 @@ class TripSchedule(models.Model):
         blank=True,default=None)
 
     def __str__(self):
-        return f'{self.sched_id:02d}'
+        # return f'{self.sched_id:02d}'
+        return f'{self.date}  {self.route}   {self.departure_time} - {self.arrival_time}'
 
     def save(self,*args, **kwargs):
         ddt = datetime.combine(date.min, self.departure_time) +\
             (datetime.combine(date.min, self.route.total_time) - datetime.min)
         self.arrival_time = ddt.time()
         super(TripSchedule, self).save(*args, **kwargs)
+
 
 class Bus(models.Model):
     class Meta:
@@ -108,10 +110,20 @@ class Trip(models.Model):
         db_column='driver_id',related_name='trips',null=True)
     trip_staffs = models.ManyToManyField(BusStaff,through='TripStaff',
         related_name='trips')
-    empty_seats = models.IntegerField()
+    empty_seats = models.IntegerField(blank=True)
 
     def __str__(self):
-        return f'{self.trip_id:011d}'
+        # return f'{self.trip_id:011d}'
+        return f'{self.trip_id}'
+
+    def save(self,*args, **kwargs):
+        tickets = self.tickets.all()
+        seat_ctr = 0
+        for t in tickets:
+            if t.ticket_type == "passenger ticket":
+                seat_ctr += 1
+        self.empty_seats = self.bus.total_seat - seat_ctr
+        super(Trip, self).save(*args, **kwargs)
 
     @property
     def is_due(self):
@@ -119,6 +131,14 @@ class Trip(models.Model):
         return self.departure_date < today.date() or \
             (self.departure_date == today.date() and self.sched.departure_time < today.time())
 
+    @property
+    def remain_load(self):
+        tickets = self.tickets.all()
+        current_load = 0
+        for t in tickets:
+            if t.ticket_type == "luggage ticket":
+                current_load += t.get_child().weight
+        return self.bus.maxload - current_load
 
 class TripStaff(models.Model):
     class Meta:

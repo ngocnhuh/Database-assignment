@@ -7,7 +7,7 @@ from employees.models import *
 from employees.forms import *
 
 from customers.models import *
-from trips.models import Route
+from trips.models import Route,Trip
 
 @register.filter
 def date_decode(value):
@@ -79,4 +79,24 @@ def trip_search_form():
     return {
         "route_starts": route_starts,
         "route_dests": route_dests
+    }
+
+
+@register.inclusion_tag("tickets/ticket_inline.html")
+def ticket_inline(trip_id):
+    trip = Trip.objects.get(trip_id=trip_id)
+    tickets = trip.tickets.all()
+    passenger_tickets = []
+    luggage_tickets = []
+
+    for t in tickets:
+        if t.ticket_type == "passenger ticket":
+            passenger_tickets.append(t.get_child())
+        elif t.ticket_type == "luggage ticket":
+            luggage_tickets.append(t.get_child())
+
+    return {
+        'trip':trip,
+        'passenger_tickets':passenger_tickets,
+        'luggage_tickets':luggage_tickets,
     }

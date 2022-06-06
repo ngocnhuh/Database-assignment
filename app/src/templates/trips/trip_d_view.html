@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load tag_extras crispy_forms_tags %}
+
+{% block title %}
+    Trip Delete
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+    <div class="row justify-content-between">
+        <h3 class='col-6'>Delete Trip</h3>
+        <div class="col-6">
+            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'trips:trip_detail_update' object.trip_id %}';">Back</a>
+        </div>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete Trip "{{ object }}"?</p>
+        <input  class="btn btn-primary" type="submit" value="Confirm">
+    </form>
+    {% end_main_ctn %}
+{% endblock content %}

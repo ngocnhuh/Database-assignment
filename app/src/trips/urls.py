@@ -5,6 +5,9 @@ from .views import *
 app_name = 'trips'
 urlpatterns = [
     path('',trip_search_view,name='trip_search'),
+    path('<int:pk>/du/',trip_detail_update_view,name='trip_detail_update'),
+    path('create/',trip_create_view,name='trip_create'),
+    path('<int:pk>/delete/',trip_delete_view,name='trip_delete'),
 
     path('bus/',bus_list_view,name='bus_list'),
     path('bus/<str:slug>/du/',bus_detail_update_view,name='bus_detail_update'),

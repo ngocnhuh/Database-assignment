@@ -35,7 +35,21 @@ class Ticket(models.Model):
 
     def __str__(self):
         return f'{self.ticket_id:011d}'
-    
+
+    @property
+    def ticket_type(self):
+        if hasattr(self, 'pt_child'):
+            return "passenger ticket"
+        if hasattr(self, 'lt_child'):
+            return "luggage ticket"
+        return "undefined"
+
+    def get_child(self):
+        if self.ticket_type == "passenger ticket":
+            return self.pt_child
+        if self.ticket_type == "luggage ticket":
+            return self.lt_child
+        return None
 
 class PassengerTicket(Ticket):
     class Meta:
@@ -43,7 +57,8 @@ class PassengerTicket(Ticket):
         db_table = 'passenger_ticket'
     
     pt_id = models.OneToOneField(Ticket, on_delete=models.CASCADE,
-        primary_key=True,parent_link=True,db_column='ticket_id')
+        primary_key=True,parent_link=True,db_column='ticket_id',
+        related_name='pt_child')
     seat_num = models.IntegerField()
 
     def __str__(self):
@@ -56,6 +71,7 @@ class LuggageTicket(Ticket):
         db_table = 'luggage_ticket'
 
     lt_id = models.OneToOneField(Ticket, on_delete=models.CASCADE,
-        primary_key=True,parent_link=True,db_column='ticket_id')
+        primary_key=True,parent_link=True,db_column='ticket_id',
+        related_name='lt_child')
     weight = models.IntegerField()
     description = models.CharField(max_length=100)

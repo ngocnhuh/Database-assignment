@@ -1,0 +1,76 @@
+<h3>Ticket</h3>
+<div class="row justify-content-between">
+    <h5 class='col-6 mb-0'>
+        Passenger Ticket
+    </h5>
+    <div class="col-6">
+        <a type="button" 
+        class="btn btn-link float-end pb-0"
+        href="javascript:location.href='';">Add</a>
+    </div>
+</div>
+<small><i>Cost: {{ trip.sched.passenger_price }} vnd -
+        Total seat: {{ trip.bus.total_seat }} -
+        Remain seat: {{ trip.empty_seats}}</i></small>
+{% if passenger_tickets %}
+    <table class="table table-hover table-responsive">
+        <thead>
+            <tr class="table-dark">
+                <th scope="col">ID</th>
+                <th scope="col">Seat Num</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in passenger_tickets %}
+                <tr onclick="window.location='';">
+                    <td scope="row">{{ t.ticket_id | stringformat:"011d" }}</td>
+                    <td>{{ t.seat_num }}</td>
+                    <td>{{ t.customer }}</td>
+                    <td>{{ t.total_cost }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div>There is no Passenger Ticket here :(</div>
+{% endif %}
+
+<div class="row justify-content-between">
+    <h5 class='col-6 mb-0'>
+        Luggage Ticket
+    </h5>
+    <div class="col-6">
+        <a type="button" 
+        class="btn btn-link float-end pb-0"
+        href="javascript:location.href='';">Add</a>
+    </div>
+</div>
+<small><i>Cost: {{ trip.sched.luggage_price }} vnd -
+        Total load: {{ trip.bus.maxload }} kg -
+        Remain load: {{ trip.remain_load }} kg</i></small>
+{% if luggage_tickets %}
+    <table class="table table-hover table-responsive">
+        <thead>
+            <tr class="table-dark">
+                <th scope="col">ID</th>
+                <th scope="col">Weight</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in luggage_tickets %}
+                <tr onclick="window.location='';">
+                    <td scope="row">{{ t.ticket_id | stringformat:"011d" }}</td>
+                    <td>{{ t.weight }}</td>
+                    <td>{{ t.customer }}</td>
+                    <td>{{ t.total_cost }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div>There is no Passenger Ticket here :(</div>
+{% endif %}

@@ -29,7 +29,7 @@
             <div class="col-6">
                 <a type="button" 
                 class="btn btn-primary float-end"
-                href="">Add Trip</a>
+                href="{% url 'trips:trip_create' %}">Add Trip</a>
             </div>
         </div>
 
@@ -62,15 +62,19 @@
             item.addEventListener('click',sortable)
         })
 
-        searchForm.addEventListener('submit',(event)=>{
-            event.preventDefault()
+        document.querySelector('#department-date').addEventListener('change',trigger)
+        document.querySelector('#route-start').addEventListener('change',trigger)
+        document.querySelector('#route-dest').addEventListener('change',trigger)
+
+
+        loadData()
+
+        function trigger() {
             let searchData = new FormData(searchForm)
             let loginObjectData = Object.fromEntries(searchData)
             let {date,route_start,route_dest} = loginObjectData
             loadData(date,route_start,route_dest)
-        })
-
-        loadData()
+        }
         
         function reClassify(element, dir) {
             element.className = element.className.replace(regex_dir, "") + dir;
@@ -85,7 +89,7 @@
             tableBody.innerHTML = ''
             data.map((i) => {
                 tableBody.innerHTML += `
-                <tr>
+                <tr onclick="window.location='${i.url}';">
                     <td>${i.trip_id}</td>
                     <td>${i.route_start} - ${i.route_dest}</td>
                     <td>${i.departure_date}</td>
@@ -114,7 +118,6 @@
         }
 
         function sortable(e) {
-            console.log(e.target)
             var element = e.target;
 
             function getValue(element) {

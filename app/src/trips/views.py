@@ -127,3 +127,38 @@ class TripSearchView(View):
     def get(self,request):
         return render(request, 'trips/trip_search.html')
 trip_search_view = TripSearchView.as_view()
+
+
+class TripDetailUpdateView(UpdateView):
+    model = Trip
+    form_class = TripForm
+    pk_field = 'trip_id'
+    template_name = 'trips/trip_du_view.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["trip"] = self.get_object()
+        return context
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            'trips:trip_detail_update',
+            kwargs={'pk':self.get_object().trip_id}
+        )
+trip_detail_update_view = TripDetailUpdateView.as_view()
+
+
+class TripCreateView(CreateView):
+    model = Trip
+    form_class = TripForm
+    success_url = reverse_lazy('trips:trip_search')
+    template_name = 'trips/trip_c_view.html'
+trip_create_view = TripCreateView.as_view()
+
+
+class TripDeleteView(DeleteView):
+    model = Trip
+    pk_field = 'trip_id'
+    template_name = 'trips/trip_d_view.html'
+    success_url = reverse_lazy('trips:trip_search')
+trip_delete_view = TripDeleteView.as_view()
