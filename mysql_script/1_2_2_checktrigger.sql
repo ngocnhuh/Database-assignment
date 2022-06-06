@@ -45,8 +45,6 @@ DELIMITER $$
 CREATE  TRIGGER `CheckEmptySeat` BEFORE INSERT ON `Passenger_ticket`
 FOR EACH ROW
 BEGIN
-	CALL CheckEmptySeatProcedure(new.ticket_id, new.seat_num);
-
 	CREATE TABLE ticket_trip_ id (ticket_id INT) AS
 		(SELECT ticket_id FROM Ticket WHERE Ticket.trip_id IN (SELECT trip_id FROM Ticket WHERE ticket_id = new.ticket_id));
     CREATE TABLE ticket_seat_num AS (
@@ -65,4 +63,4 @@ BEGIN
 	END IF;
     
 END; $$
-DELIMITER ;~
+DELIMITER ;
