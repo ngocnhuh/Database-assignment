@@ -3,18 +3,18 @@
 {% load tag_extras %}
 
 {% block title %}
-    Route List
+    Trip Schedule List
 {% endblock title %}
 
 {% block content %}
     {% include 'components/navbar.html' %}
     {% main_ctn %}
         <div class="row justify-content-between">
-            <h3 class='col-6'>Route</h3>
+            <h3 class='col-6'>Trip Schedule</h3>
             <div class="col-6">
                 <a type="button" 
                 class="btn btn-primary float-end"
-                href="{% url 'trips:route_create' %}">Add Route</a>
+                href="{% url 'trips:sched_create' %}">Add Trip Schedule</a>
             </div>
         </div>
         {% if object_list %}
@@ -22,22 +22,24 @@
                 <thead>
                     <tr class="table-dark">
                         <th scope="col">ID</th>
-                        <th scope="col">Starting Point</th>
-                        <th scope="col">Destination</th>
+                        <th scope="col">Route</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Time</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for o in object_list %}
-                        <tr onclick="window.location='{% url 'trips:route_detail_update' o.route_id %}';">
-                            <td scope="row">{{ o.route_id }}</td>
-                            <td>{{ o.starting_point | upper }}</td>
-                            <td>{{ o.destination | upper }}</td>
+                        <tr onclick="window.location='{% url 'trips:sched_detail_update' o.sched_id %}';">
+                            <td scope="row">{{ o.sched_id|stringformat:"02d" }}</td>
+                            <td>{{ o.route | upper }}</td>
+                            <td>{{ o.date | date_decode }}</td>
+                            <td>{{ o.departure_time | date:"H:i:s" }} - {{ o.arrival_time | date:"H:i:s" }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <div>There is no route here :(</div>
+            <div>There is no Trip Schedule here :(</div>
         {% endif %}
 
     {% end_main_ctn %}

@@ -11,7 +11,7 @@
     <div class="row justify-content-between">
         <h3 class='col-6'>Delete Bus</h3>
         <div class="col-6">
-            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'trips:bus_list' %}';">Back</a>
+            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'trips:bus_detail_update' object.bus_id %}';">Back</a>
         </div>
     </div>
     <form method="post">

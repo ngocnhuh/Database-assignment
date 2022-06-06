@@ -52,3 +52,41 @@ class RouteForm(forms.ModelForm):
                 css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
+
+
+class TripScheduleForm(forms.ModelForm):
+    class Meta:
+        model = TripSchedule
+        fields = '__all__'
+
+    departure_time = forms.TimeField(
+        widget=forms.TimeInput(
+            attrs={
+                'placeholder': 'hh:mm:ss',
+            }
+        )
+    )
+
+    arrival_time = forms.TimeField(
+        required=False,
+        widget=forms.TimeInput(
+            attrs={
+                'readonly':True,
+                'placeholder': 'hh:mm:ss',
+            }
+        )
+    )
+
+    def __init__(self,*args, **kwargs):
+        super(TripScheduleForm,self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(Column('route'),Column('date'),Column('bustype')),
+            Row(Column('departure_time'),Column('arrival_time')),
+            Row(Column('passenger_price'),Column('luggage_price')),
+            FormActions(
+                Submit('save','Save',css_class='cus-save-btn'),
+                css_class='d-grid gap-2 d-flex justify-content-end'
+            )
+        )
+

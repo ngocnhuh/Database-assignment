@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+from datetime import datetime,date,time
 
 from employees.models import Driver,BusStaff
 
@@ -20,7 +20,7 @@ class Route(models.Model):
     total_time = models.TimeField(null=True,blank=True,default=None)
 
     def __str__(self):
-        return f'{self.route_id:03d}'
+        return f'{self.starting_point} - {self.destination}'
     
 
 class Stop(models.Model):
@@ -58,13 +58,18 @@ class TripSchedule(models.Model):
     luggage_price = models.DecimalField(max_digits=10,decimal_places=2)
     date = models.TextField(max_length=3,choices=DateChoices.choices)
     departure_time = models.TimeField()
-    arrival_time = models.TimeField(null=True,blank=True,default=None)
+    arrival_time = models.TimeField(null=False,blank=True)
     bustype = models.TextField(choices=BusChoices.choices,null=True,
         blank=True,default=None)
 
     def __str__(self):
         return f'{self.sched_id:02d}'
 
+    def save(self,*args, **kwargs):
+        ddt = datetime.combine(date.min, self.departure_time) +\
+            (datetime.combine(date.min, self.route.total_time) - datetime.min)
+        self.arrival_time = ddt.time()
+        super(TripSchedule, self).save(*args, **kwargs)
 
 class Bus(models.Model):
     class Meta:

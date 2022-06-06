@@ -12,7 +12,6 @@ class BusListView(ListView):
     template_name = 'trips/bus_l_view.html'
 bus_list_view = BusListView.as_view()
 
-
 class BusDetailUpdateView(UpdateView):
     model = Bus
     template_name = 'trips/bus_du_view.html'
@@ -61,7 +60,7 @@ class RouteDetailUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["Route"] = self.get_object()
+        context["route"] = self.get_object()
         return context
     
     def get_success_url(self):
@@ -84,3 +83,41 @@ class RouteDeleteView(DeleteView):
     template_name = 'trips/route_d_view.html'
     success_url = reverse_lazy('trips:route_list')
 route_delete_view = RouteDeleteView.as_view()
+
+
+class TripScheduleListView(ListView):
+    model = TripSchedule
+    pk_field = 'sched_id'
+    template_name = 'trips/sched_l_view.html'
+sched_list_view = TripScheduleListView.as_view()
+
+class TripScheduleDetailUpdateView(UpdateView):
+    model = TripSchedule
+    pk_field = 'sched_id'
+    form_class = TripScheduleForm
+    template_name = 'trips/sched_du_view.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sched"] = self.get_object()
+        return context
+    
+    def get_success_url(self):
+        return reverse_lazy(
+            'trips:sched_detail_update',
+            kwargs={'pk':self.get_object().sched_id}
+        )
+sched_detail_update_view = TripScheduleDetailUpdateView.as_view()
+
+class TripScheduleCreateView(CreateView):
+    model = TripSchedule
+    form_class = TripScheduleForm
+    success_url = reverse_lazy('trips:sched_list')
+    template_name = 'trips/sched_c_view.html'
+sched_create_view = TripScheduleCreateView.as_view()
+
+class TripScheduleDeleteView(DeleteView):
+    model = TripSchedule
+    pk_field = 'sched_id'
+    template_name = 'trips/sched_d_view.html'
+    success_url = reverse_lazy('trips:sched_list')
+sched_delete_view = TripScheduleDeleteView.as_view()

@@ -11,7 +11,7 @@
     <div class="row justify-content-between">
         <h3 class='col-6'>Delete Route</h3>
         <div class="col-6">
-            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'trips:route_list' %}';">Back</a>
+            <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'trips:route_detail_update' object.route_id %}';">Back</a>
         </div>
     </div>
     <form method="post">
