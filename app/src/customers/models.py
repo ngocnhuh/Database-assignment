@@ -26,7 +26,8 @@ class MembershipLevel(models.Model):
     
     level_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50)
-    minimun_point = models.IntegerField()
+    minimum_point = models.IntegerField()
+    maximum_point = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -62,4 +63,5 @@ class SalesPromotion(models.Model):
     end = models.DateTimeField(blank=False)
 
     def __str__(self):
-        return f'{self.program_id:09d}'
+        # return f'{self.program_id:09d}'
+        return f'{self.description}'

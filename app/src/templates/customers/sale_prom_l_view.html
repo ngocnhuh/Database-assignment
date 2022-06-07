@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load tag_extras %}
+
+{% block title %}
+    Sale Promotion List
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>Sale Promotion</h3>
+            <div class="col-6">
+                <a type="button" class="btn btn-primary float-end"
+                    href="{% url 'customers:sale_prom_create' %}">Add Promotion</a>
+            </div>
+        </div>
+        {% if object_list %}
+            <table class="table table-hover table-responsive">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">ID</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Start</th>
+                        <th scope="col">End</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in object_list %}
+                        <tr onclick="window.location='{% url 'customers:sale_prom_detail_update' o.program_id %}';">
+                            <td scope="row">{{ o.program_id|stringformat:"09d" }}</td>
+                            <td>{{ o.description }}</td>
+                            <td>{{ o.start | date:"Y-m-d H:i:s"}}</td>
+                            <td>{{ o.end | date:"Y-m-d H:i:s"}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div>There is no promotion here :(</div>
+        {% endif %}
+
+    {% end_main_ctn %}
+{% endblock content %}

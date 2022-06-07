@@ -5,7 +5,7 @@
             <tr class="table-dark">
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
-                <th scope="col">Minimun Point</th>
+                <th scope="col">Point Range</th>
             </tr>
         </thead>
         <tbody>
@@ -13,7 +13,7 @@
                 <tr>
                     <td scope="row">{{ msl.level_id|stringformat:"05d" }}</td>
                     <td>{{ msl.name }}</td>
-                    <td>{{ msl.minimun_point }}</td>
+                    <td>{{ msl.minimum_point }} - {{ msl.maximum_point }}</td>
                 </tr>
             {% endfor %}
         </tbody>

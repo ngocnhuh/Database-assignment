@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.shortcuts import render,get_object_or_404,redirect
 from django.views import View
-from django.views.generic import CreateView,DeleteView
+from django.views.generic import CreateView,DeleteView,ListView,UpdateView
 from django.http import HttpResponse
 
 from .models import *
@@ -109,3 +109,44 @@ class MembershipDeleteView(DeleteView):
             kwargs={'pk':self.object.customer.customer_id})
 
 membership_delete_view = MembershipDeleteView.as_view()
+
+
+class SalesPromotionListView(ListView):
+    model = SalesPromotion
+    template_name = 'customers/sale_prom_l_view.html'
+sale_prom_list_view = SalesPromotionListView.as_view()
+
+
+class SalesPromotionDetailUpdateView(UpdateView):
+    model = SalesPromotion
+    form_class = SalePromotionForm
+    pk_field = 'program_id'
+    template_name = 'customers/sale_prom_du_view.html'
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'customers:sale_prom_detail_update',
+            kwargs={'pk':self.get_object().ticket_id}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sale_prom"] = self.get_object()
+        return context
+sale_prom_detail_update_view = SalesPromotionDetailUpdateView.as_view()
+
+
+class SalesPromotionCreateView(CreateView):
+    model = SalesPromotion
+    form_class = SalePromotionForm
+    success_url = reverse_lazy('customers:sale_prom_list')
+    template_name = 'customers/sale_prom_c_view.html'
+sale_prom_create_view = SalesPromotionCreateView.as_view()
+
+
+class SalesPromotionDeleteView(DeleteView):
+    model = SalesPromotion
+    pk_field = 'program_id'
+    template_name = 'customers/sale_prom_d_view.html'
+    success_url = reverse_lazy('customers:sale_prom_list')
+sale_prom_delete_view = SalesPromotionDeleteView.as_view()

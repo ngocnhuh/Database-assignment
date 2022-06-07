@@ -1,0 +1,24 @@
+<!-- Detail Update View -->
+{% extends 'base.html' %}
+{% load tag_extras crispy_forms_tags %}
+
+{% block title %}
+    Ticket Detail
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+        <div class="row justify-content-between">
+            <h3 class='col-6'>
+                {{ ticket.ticket_type | title }} - <small>{{ ticket.ticket_id }}</small>
+                <a type="button" class="btn btn-link text-danger px-0"
+                href="javascript:location.href='{% url 'tickets:ticket_delete' ticket.ticket_id %}';">Delete</a>
+            </h3>
+            <div class="col-6">
+                <a type="button" class="btn btn-link float-end"href="javascript:location.href='{% url 'trips:trip_detail_update' ticket.trip.trip_id %}';">Back</a>
+            </div>
+        </div>
+        {% crispy form %}
+    {% end_main_ctn %}
+{% endblock content %}

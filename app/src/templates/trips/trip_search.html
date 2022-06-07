@@ -42,6 +42,7 @@
                     <th scope="col">Route</th>
                     <th scope="col">Date</th>
                     <th scope="col">Time</th>
+                    <th scope="col">Is Due</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,11 +90,12 @@
             tableBody.innerHTML = ''
             data.map((i) => {
                 tableBody.innerHTML += `
-                <tr onclick="window.location='${i.url}';">
+                <tr ${i.is_due?'class="table-secondary"':''} onclick="window.location='${i.url}';">
                     <td>${i.trip_id}</td>
                     <td>${i.route_start} - ${i.route_dest}</td>
                     <td>${i.departure_date}</td>
                     <td>${i.departure_time} - ${i.arrival_time}</td>
+                    <td style='text-transform: capitalize;'>${i.is_due}</td>
                 </tr>
                 `
             })

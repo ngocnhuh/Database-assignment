@@ -28,8 +28,8 @@
                         <tr data-bs-toggle="modal" data-bs-target="#updateModa{{s.shift_id}}">
                             {% comment %} <td scope="row">{{ s.shift_id|stringformat:"07d" }}</td> {% endcomment %}
                             <td>{{ s.date | date_decode }}</td>
-                            <td>{{ s.start }}</td>
-                            <td>{{ s.till}}</td>
+                            <td>{{ s.start| date:"H:i:s"}}</td>
+                            <td>{{ s.till | date:"H:i:s"}}</td>
                         </tr>
 
                         <div class="modal fade" id="updateModa{{s.shift_id}}" tabindex="-1" aria-hidden="true">

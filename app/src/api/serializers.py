@@ -13,6 +13,7 @@ class TripSerializer(serializers.ModelSerializer):
             'departure_time',
             'arrival_time',
             'url',
+            'is_due',
         ]
 
     route_start = serializers.SerializerMethodField()
