@@ -53,12 +53,12 @@ class MembershipForm(forms.ModelForm):
 
     start = forms.DateTimeField(
         required=True,
-        widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy:mm:dd hh:mm:ss'}),
+        widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy-mm-dd hh:mm:ss'}),
     )
 
     end = forms.DateTimeField(
         required=True,
-        widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy:mm:dd hh:mm:ss'}),
+        widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy-mm-dd hh:mm:ss'}),
     )
 
     def __init__(self,*args, **kwargs):
@@ -67,6 +67,36 @@ class MembershipForm(forms.ModelForm):
         self.helper.layout = Layout(
             Row(Column('start'),Column('end')),
             Row(Column('level'),Column('points')),
+            FormActions(
+                Submit('save','Save',css_class='ms-save-btn'),
+                css_class='d-grid gap-2 d-flex justify-content-end'
+            )
+        )
+        self.fields['level'].disabled = True
+
+
+class SalePromotionForm(forms.ModelForm):
+    class Meta:
+        model = SalesPromotion
+        fields = '__all__'
+
+    start = forms.DateTimeField(
+        required=True,
+        widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy-mm-dd hh:mm:ss'}),
+    )
+
+    end = forms.DateTimeField(
+        required=True,
+        widget=forms.DateTimeInput(attrs={'placeholder': 'yyyy-mm-dd hh:mm:ss'}),
+    )
+
+    def __init__(self,*args, **kwargs):
+        super(SalePromotionForm,self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(Column('description')),
+            Row(Column('require_level'),Column('discount_rate')),
+            Row(Column('start'),Column('end')),
             FormActions(
                 Submit('save','Save',css_class='ms-save-btn'),
                 css_class='d-grid gap-2 d-flex justify-content-end'

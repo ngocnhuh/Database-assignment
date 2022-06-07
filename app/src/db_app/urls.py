@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/',include('api.urls')),
     path('employees/',include('employees.urls')),
     path('customers/',include('customers.urls')),
-    path('trips/',include('trips.urls'))
+    path('trips/',include('trips.urls')),
+    path('tickets/',include('tickets.urls')),
 ]

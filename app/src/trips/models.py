@@ -64,7 +64,7 @@ class TripSchedule(models.Model):
 
     def __str__(self):
         # return f'{self.sched_id:02d}'
-        return f'{self.date}  {self.route}   {self.departure_time} - {self.arrival_time}'
+        return f'{self.DateChoices(self.date).label}  {self.route}   {self.departure_time} - {self.arrival_time}'
 
     def save(self,*args, **kwargs):
         ddt = datetime.combine(date.min, self.departure_time) +\
@@ -114,16 +114,19 @@ class Trip(models.Model):
 
     def __str__(self):
         # return f'{self.trip_id:011d}'
-        return f'{self.trip_id}'
+        return f'{self.departure_date} {self.sched}'
 
     def save(self,*args, **kwargs):
+        self.update_empty_seats()
+        super(Trip, self).save(*args, **kwargs)
+
+    def update_empty_seats(self):
         tickets = self.tickets.all()
         seat_ctr = 0
         for t in tickets:
             if t.ticket_type == "passenger ticket":
                 seat_ctr += 1
         self.empty_seats = self.bus.total_seat - seat_ctr
-        super(Trip, self).save(*args, **kwargs)
 
     @property
     def is_due(self):

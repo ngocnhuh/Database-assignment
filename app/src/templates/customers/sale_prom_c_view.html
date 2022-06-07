@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load tag_extras crispy_forms_tags %}
+
+{% block title %}
+    Sale Promotion Create
+{% endblock title %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    {% main_ctn %}
+    <div class="row justify-content-between">
+        <h3 class='col-6'>Create Sale Promotion</h3>
+        <div class="col-6">
+            <a type="button" class="btn btn-link float-end"
+            href="javascript:location.href='{% url 'customers:sale_prom_list' %}';">Back</a>
+        </div>
+    </div>
+    {% crispy form %}
+    {% end_main_ctn %}
+{% endblock content %}

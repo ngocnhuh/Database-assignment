@@ -13,7 +13,7 @@ for e in Membership.objects.all()[:3]:
 
 print('\nMEMBERSHIP LEVEL')
 for e in MembershipLevel.objects.all()[:3]:
-    print(f'{e.level_id} | {e.name} | {e.minimun_point}')
+    print(f'{e.level_id} | {e.name} | {e.minimum_point} | {e.maximum_point}')
 
 print('\nSALES PROMOTION')
 for e in SalesPromotion.objects.all()[:3]:

@@ -6,7 +6,7 @@
     <div class="col-6">
         <a type="button" 
         class="btn btn-link float-end pb-0"
-        href="javascript:location.href='';">Add</a>
+        href="javascript:location.href='{% url 'tickets:passenger_ticket_create' %}?trip_id={{trip.trip_id}}';">Add</a>
     </div>
 </div>
 <small><i>Cost: {{ trip.sched.passenger_price }} vnd -
@@ -24,7 +24,7 @@
         </thead>
         <tbody>
             {% for t in passenger_tickets %}
-                <tr onclick="window.location='';">
+                <tr onclick="window.location='{% url 'tickets:ticket_detail_update' t.ticket_id %}';">
                     <td scope="row">{{ t.ticket_id | stringformat:"011d" }}</td>
                     <td>{{ t.seat_num }}</td>
                     <td>{{ t.customer }}</td>
@@ -44,7 +44,7 @@
     <div class="col-6">
         <a type="button" 
         class="btn btn-link float-end pb-0"
-        href="javascript:location.href='';">Add</a>
+        href="javascript:location.href='{% url 'tickets:luggage_ticket_create' %}?trip_id={{trip.trip_id}}';">Add</a>
     </div>
 </div>
 <small><i>Cost: {{ trip.sched.luggage_price }} vnd -
@@ -62,7 +62,7 @@
         </thead>
         <tbody>
             {% for t in luggage_tickets %}
-                <tr onclick="window.location='';">
+                <tr onclick="window.location='{% url 'tickets:ticket_detail_update' t.ticket_id %}';">
                     <td scope="row">{{ t.ticket_id | stringformat:"011d" }}</td>
                     <td>{{ t.weight }}</td>
                     <td>{{ t.customer }}</td>
@@ -72,5 +72,5 @@
         </tbody>
     </table>
 {% else %}
-    <div>There is no Passenger Ticket here :(</div>
+    <div>There is no Luggage Ticket here :(</div>
 {% endif %}
