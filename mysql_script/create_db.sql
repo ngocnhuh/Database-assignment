@@ -142,7 +142,7 @@ CREATE TABLE `Sales_promotion`(
   `program_id` int(9) NOT NULL AUTO_INCREMENT,
   `discount_rate` float(5, 2) NOT NULL,
   `description` varchar(100),
-  `require_level` tinyint(1) DEFAULT 0,
+  `require_level` tinyint(1) DEFAULT 1,
   `start` timestamp NOT NULL,
   `end` timestamp NOT NULL,
   PRIMARY KEY (`program_id`)
@@ -223,7 +223,8 @@ ADD (CONSTRAINT  `fk_member_customerid` FOREIGN KEY (`customer_id`) REFERENCES `
      CONSTRAINT  `fk_member_level` FOREIGN KEY (`level`) REFERENCES `Membership_level` (`level_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
 
 ALTER TABLE `Sales_promotion`
-ADD CONSTRAINT `chk_discountrate` CHECK (`discount_rate`< 1 AND `discount_rate`>0);
+ADD (CONSTRAINT `chk_discountrate` CHECK (`discount_rate`< 1 AND `discount_rate`>0),
+	 CONSTRAINT  `fk_sale_requiredlevel` FOREIGN KEY (`require_level`) REFERENCES `Membership_level` (`level_id`) ON DELETE RESTRICT ON UPDATE CASCADE);
 
 ALTER TABLE `Ticket`
 ADD ( CONSTRAINT  `fk_ticket_tripid` FOREIGN KEY (`trip_id`) REFERENCES `Trip` (`trip_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
