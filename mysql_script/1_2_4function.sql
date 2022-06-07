@@ -1,7 +1,7 @@
 
 USE `bus_system`;
 DELIMITER $$
-DROP FUNCTION IF EXISTS `total_money`;
+DROP FUNCTION IF EXISTS `total_money`$$
 CREATE  FUNCTION `total_money`(customer_id_real INT) 
 RETURNS INT
     DETERMINISTIC
@@ -28,7 +28,7 @@ DELIMITER ;
 
 
 DELIMITER $$
-DROP FUNCTION IF EXISTS `check_ve`;
+DROP FUNCTION IF EXISTS `check_ve`$$
 CREATE FUNCTION `check_ve`(
 	ticket_id_1 INT
 ) RETURNS decimal(10,0)

@@ -123,7 +123,8 @@ CREATE TABLE `Customer`(
 CREATE TABLE `Membership_level` (
   `level_id` tinyint(1) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `minimun_point` int NOT NULL,
+  `minimum_point` int NOT NULL,
+  `maximum_point` int,
   PRIMARY KEY (`level_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -395,9 +396,9 @@ INSERT INTO `Customer` VALUES
   (10,'Le','Minh Cong','1982-05-22','0902005932','12 Le Duan, Tuy Hoa', 'minhcongth123@gmail.com');
 
 INSERT INTO `Membership_level` VALUES
-  (1,'Dong',0),
-  (2,'Bac', 100),
-  (3,'Vang',200);
+  (1,'Dong',0,99),
+  (2,'Bac', 100,199),
+  (3,'Vang',200,NULL);
 
 INSERT INTO `Membership` VALUES
   (1,1,'2020-01-01 12:00:00', '2025-01-01 12:00:00', 2,150),
