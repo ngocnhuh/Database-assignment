@@ -18,9 +18,9 @@ class TicketDetailUpdateView(UpdateView):
     def get_form_class(self):
         obj = self.get_object()
         if isinstance(obj,PassengerTicket):
-            return PassengerTicketForm
+            return PassengerTicketFreezeForm
         elif isinstance(obj,LuggageTicket):
-            return LuggageTicketForm
+            return LuggageTicketFreezeForm
         return None
 
     def get_success_url(self):
@@ -38,7 +38,6 @@ ticket_detail_update_view = TicketDetailUpdateView.as_view()
 
 class PassengerTicketCreateView(CreateView):
     model = PassengerTicket
-    # form_class = PassengerTicketCreateForm
     form_class = PassengerTicketForm
     template_name = 'tickets/ticket_c_view.html'
 
@@ -66,7 +65,6 @@ passenger_ticket_create_view = PassengerTicketCreateView.as_view()
 
 class LuggageTicketCreateView(CreateView):
     model = LuggageTicket
-    # form_class = LuggageTicketCreateForm
     form_class = LuggageTicketForm
     template_name = 'tickets/ticket_c_view.html'
 

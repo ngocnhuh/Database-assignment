@@ -126,7 +126,7 @@ class SalesPromotionDetailUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy(
             'customers:sale_prom_detail_update',
-            kwargs={'pk':self.get_object().ticket_id}
+            kwargs={'pk':self.get_object().program_id}
         )
 
     def get_context_data(self, **kwargs):

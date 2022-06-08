@@ -2,6 +2,7 @@ from django.db import models
 
 from trips.models import Trip
 from customers.models import Customer,SalesPromotion
+from django.core.validators import ValidationError
 
 class PaymentMethods(models.Model):
     class Meta:
@@ -50,6 +51,12 @@ class Ticket(models.Model):
         if self.ticket_type == "luggage ticket":
             return self.lt_child
         return None
+    
+    def delete(self,*args, **kwargs):
+        if hasattr(self.customer,'membership'):
+            self.customer.membership.points -= 1
+            self.customer.membership.save()
+        super(Ticket,self).delete(*args, **kwargs)
 
 class PassengerTicket(Ticket):
     class Meta:
@@ -64,17 +71,39 @@ class PassengerTicket(Ticket):
     def __str__(self):
         return f'{self.pt_id} {self.seat_num}'
 
+    def clean(self,*args, **kwargs):
+        super(PassengerTicket,self).clean(*args, **kwargs)
+
+        if not (0 < self.seat_num <= self.trip.bus.total_seat):
+            error = f'seat_num must be in range [1,{self.trip.bus.total_seat}]'
+            raise ValidationError(
+                {'seat_num':error}
+            )
+
+        qs = self.trip.tickets.all()
+        if self.ticket_id is not None:
+            qs = qs.exclude(ticket_id=self.ticket_id)
+
+        for ticket in qs:
+            if ticket.ticket_type == 'passenger ticket' \
+            and ticket.get_child().seat_num == self.seat_num:
+                raise ValidationError({'seat_num':('This seat has been reserved')})
+
     
     def save(self,*args, **kwargs):
-        print(self.total_cost)
+        self.full_clean()
         if self.total_cost is None:
             ticket_price = float(self.trip.sched.passenger_price)
-            if self.program is not None:
-                self.total_cost = ticket_price*(1-self.program.discount_rate)
-            else:
-                self.total_cost = ticket_price
-        super(PassengerTicket, self).save()
+            self.total_cost = ticket_price
 
+            if hasattr(self.customer,'membership'):
+                self.customer.membership.points += 1
+                self.customer.membership.save()
+                if self.program is not None and self.program.is_active \
+                and self.program.require_level <= self.customer.membership.level.level_id:
+                    self.total_cost = ticket_price*(1-self.program.discount_rate)
+
+        super(PassengerTicket, self).save()
     
 
 class LuggageTicket(Ticket):
@@ -91,11 +120,33 @@ class LuggageTicket(Ticket):
     def __str__(self):
         return f'{self.pt_id} {self.description}'
 
+    def clean(self,*args, **kwargs):
+        super(LuggageTicket,self).clean(*args, **kwargs)
+
+        qs = self.trip.tickets.all()
+        if self.ticket_id is not None:
+            qs = qs.exclude(ticket_id=self.ticket_id)
+
+        current_load = self.trip.bus.maxload
+        for t in qs:
+            if t.ticket_type == "luggage ticket":
+                current_load -= t.get_child().weight
+        if current_load < self.weight:
+            error = f'The remain load is only {current_load}'
+            raise ValidationError({'weight':error})
+
+
     def save(self,*args, **kwargs):
+        self.full_clean()
         if self.total_cost is None:
             ticket_price = float(self.trip.sched.luggage_price)
-            if self.program is not None:
-                self.total_cost = ticket_price*(1-self.program.discount_rate)
-            else:
-                self.total_cost = ticket_price
+            self.total_cost = ticket_price
+
+            if hasattr(self.customer,'membership'):
+                self.customer.membership.points += 1
+                self.customer.membership.save()
+                if self.program is not None and self.program.is_active \
+                and self.program.require_level <= self.customer.membership.level.level_id:
+                    self.total_cost = ticket_price*(1-self.program.discount_rate)
+                    
         super(LuggageTicket, self).save()

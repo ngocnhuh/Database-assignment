@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.core.validators import ValidationError
+
 from datetime import datetime
 
 class Customer(models.Model):
@@ -47,7 +49,14 @@ class Membership(models.Model):
     points = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'{self.member_id:011d} {self.customer_id}'
+        return f'{level} {self.customer_id}'
+
+    def save(self,*args, **kwargs):
+        levels = MembershipLevel.objects.all()
+        for l in levels:
+            if l.minimum_point <= self.points <= (l.maximum_point or 2147483647):
+                self.level = l
+        super(Membership, self).save(*args, **kwargs)
     
 
 class SalesPromotion(models.Model):
@@ -64,4 +73,29 @@ class SalesPromotion(models.Model):
 
     def __str__(self):
         # return f'{self.program_id:09d}'
-        return f'{self.description}'
+        return f'{self.description} - {"Active" if self.is_active else "Inactive"}'
+
+    def clean(self,*args, **kwargs):
+        super(SalesPromotion,self).clean(*args, **kwargs)
+
+        if not (0 < self.discount_rate < 1):
+            raise ValidationError({'discount_rate':'discount_rate must in range (0,1)'})
+
+    def save(self,*args, **kwargs):
+        self.full_clean()
+        super(SalesPromotion, self).save(*args, **kwargs)
+
+    @property
+    def is_active(self):
+        now_date = datetime.now().date()
+        now_time = datetime.now().time()
+
+        if now_date < self.start.date() or \
+        (now_date == self.start.date() and now_time < self.start.time()):
+            return False
+
+        if now_date > self.end.date() or \
+        (now_date == self.end.date() and now_time > self.end.time()):
+            return False
+        
+        return True

@@ -64,13 +64,13 @@ class LuggageTicketForm(TicketForm):
         self.fields['trip'].disabled = True
 
 
-# class PassengerTicketCreateForm(PassengerTicketForm):
-#     def __init__(self,*args, **kwargs):
-#         super(PassengerTicketCreateForm,self).__init__(*args, **kwargs)
-#         self.fields['trip'].disabled = True
+class PassengerTicketFreezeForm(PassengerTicketForm):
+    def __init__(self,*args, **kwargs):
+        super(PassengerTicketFreezeForm,self).__init__(*args, **kwargs)
+        self.fields['program'].disabled = True
 
 
-# class LuggageTicketCreateForm(LuggageTicketForm):
-#     def __init__(self,*args, **kwargs):
-#         super(LuggageTicketCreateForm,self).__init__(*args, **kwargs)
-#         self.fields['trip'].disabled = True
+class LuggageTicketFreezeForm(LuggageTicketForm):
+    def __init__(self,*args, **kwargs):
+        super(LuggageTicketFreezeForm,self).__init__(*args, **kwargs)
+        self.fields['program'].disabled = True

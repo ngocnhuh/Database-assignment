@@ -15,7 +15,7 @@
             {% for t in trips %}
                 <tr {% if t.is_due %}class="table-secondary"{% endif %}
                 onclick="window.location='{% url 'trips:trip_detail_update' t.trip_id %}';">
-                    <td>{{ t.bus }}</td>
+                    <td>{{ t.bus.bus_id }}</td>
                     <td>{{ t.sched.route | upper }}</td>
                     <td>{{ t.departure_date }}</td>
                     <td>{{ t.sched.departure_time | date:"H:i:s"}} - {{ t.sched.arrival_time | date:"H:i:s"}}</td>

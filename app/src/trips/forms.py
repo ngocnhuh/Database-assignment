@@ -41,6 +41,14 @@ class RouteForm(forms.ModelForm):
         model = Route
         fields = '__all__'
 
+    total_time = forms.TimeField(
+        widget=forms.TimeInput(
+            attrs={
+                'placeholder': 'hh:mm:ss',
+            }
+        )
+    )
+
     def __init__(self,*args, **kwargs):
         super(RouteForm,self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -102,13 +110,6 @@ class TripForm(forms.ModelForm):
         )
     )
 
-    empty_seats = forms.IntegerField(
-        required=False,
-        widget=forms.NumberInput(
-            attrs={'readonly':True}
-        )
-    )
-
     def __init__(self,*args, **kwargs):
         super(TripForm,self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -122,3 +123,9 @@ class TripForm(forms.ModelForm):
                 css_class='d-grid gap-2 d-flex justify-content-end'
             )
         )
+        self.fields['empty_seats'].disabled = True
+
+class TripDetailForm(TripForm):
+    def __init__(self,*args, **kwargs):
+        super(TripDetailForm,self).__init__(*args, **kwargs)
+        self.fields['sched'].disabled = True

@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.core.validators import MinValueValidator,RegexValidator
+
 class Employee(models.Model):
     class Meta:
         managed = False
@@ -67,8 +69,8 @@ class Driver(Employee):
     dv_id = models.OneToOneField(Employee, on_delete=models.CASCADE, 
         primary_key=True, db_column="ee_id", parent_link=True,
         related_name='dv_child')
-    license_id = models.CharField(max_length=20)
-    exp_year = models.IntegerField()
+    license_id = models.CharField(max_length=20,validators=[RegexValidator('(E|F)[0-9]*$')])
+    exp_year = models.IntegerField(validators=[MinValueValidator(5)])
 
 
 class BusStaff(Employee):
@@ -78,7 +80,7 @@ class BusStaff(Employee):
     bs_id = models.OneToOneField(Employee, on_delete=models.CASCADE, 
         primary_key=True, db_column="ee_id", parent_link=True,
         related_name='bs_child')
-    vaccine = models.IntegerField()
+    vaccine = models.IntegerField(validators=[MinValueValidator(2)])
 
 
 class TelephoneStaff(Employee):

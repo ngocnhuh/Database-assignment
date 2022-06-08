@@ -1,7 +1,12 @@
 from django.db import models
-from datetime import datetime,date,time
+from django.core.validators import ValidationError
+
+from datetime import datetime,date,time,timedelta
 
 from employees.models import Driver,BusStaff
+
+MIN_DELTA_TIME_TRIP_SPAN = timedelta(hours=12)
+
 
 class BusChoices(models.TextChoices):
     NORM = 'NORMAL','Normal'
@@ -17,7 +22,7 @@ class Route(models.Model):
     starting_point = models.CharField(max_length=30)
     destination = models.CharField(max_length=30)
     distance = models.IntegerField(null=True,blank=True,default=None)
-    total_time = models.TimeField(null=True,blank=True,default=None)
+    total_time = models.TimeField()
 
     def __str__(self):
         return f'{self.starting_point} - {self.destination}'
@@ -59,8 +64,7 @@ class TripSchedule(models.Model):
     date = models.TextField(max_length=3,choices=DateChoices.choices)
     departure_time = models.TimeField()
     arrival_time = models.TimeField(null=False,blank=True)
-    bustype = models.TextField(choices=BusChoices.choices,null=True,
-        blank=True,default=None)
+    bustype = models.TextField(choices=BusChoices.choices)
 
     def __str__(self):
         # return f'{self.sched_id:02d}'
@@ -84,15 +88,13 @@ class Bus(models.Model):
         CABIN  = 'CABIN', 'Cabin'
 
     bus_id = models.CharField(max_length=10,primary_key=True)
-    bustype = models.TextField(choices=BusChoices.choices,null=True,
-        blank=True,default=None)
+    bustype = models.TextField(choices=BusChoices.choices)
     total_seat = models.IntegerField()
     maxload = models.IntegerField()
-    sleeper_type = models.TextField(choices=SleeperTypeChoice.choices,
-        null=True,blank=True,default=None)
+    sleeper_type = models.TextField(choices=SleeperTypeChoice.choices)
 
     def __str__(self):
-        return self.bus_id
+        return f'{self.bus_id} {self.bustype}'
     
 
 class Trip(models.Model):
@@ -116,7 +118,57 @@ class Trip(models.Model):
         # return f'{self.trip_id:011d}'
         return f'{self.departure_date} {self.sched}'
 
+    def clean(self,*args, **kwargs):
+        super(Trip,self).clean(*args, **kwargs)
+
+        departure_sched = datetime.combine(self.departure_date, self.sched.departure_time)
+        arrival_sched = datetime.combine(self.departure_date, self.sched.arrival_time)
+
+        # bustype in bus and bustype in trip_schedule
+        if self.bus.bustype != self.sched.bustype:
+            error = f'bustype must be {self.sched.bustype}'
+            raise ValidationError({'bus':error})
+
+        # departure_date and trips_chedule date
+        WEEKDAYS = ['MON','TUE','WED','THU','FRI','SAT','SUN']
+        if self.sched.date!=WEEKDAYS[self.departure_date.weekday()]:
+            error = f'Weekday must be {TripSchedule.DateChoices(self.sched.date).label}'
+            raise ValidationError({'departure_date':error})
+
+        # driver
+        driver_sched = self.driver.trips.all()
+        if self.trip_id is not None:
+            driver_sched=driver_sched.exclude(trip_id = self.trip_id)
+        for trip in driver_sched:
+            departure_dt = datetime.combine(trip.departure_date, trip.sched.departure_time)
+            arrival_dt = datetime.combine(trip.departure_date, trip.sched.arrival_time)
+            if not (departure_sched-arrival_dt > MIN_DELTA_TIME_TRIP_SPAN \
+                or departure_dt-arrival_sched > MIN_DELTA_TIME_TRIP_SPAN):
+                raise ValidationError({'driver':'Driver not available'})
+        
+        # bus_staff
+        trip_staffs = self.trip_staffs.all()
+        overlaped_staffs = []
+        for tf in trip_staffs:
+            tf_sched = tf.trips.all()
+            if self.trip_id is not None:
+                tf_sched=tf_sched.exclude(trip_id = self.trip_id)
+            for trip in tf_sched:
+                departure_dt = datetime.combine(trip.departure_date, trip.sched.departure_time)
+                arrival_dt = datetime.combine(trip.departure_date, trip.sched.arrival_time)
+                if not (departure_sched-arrival_dt > MIN_DELTA_TIME_TRIP_SPAN \
+                    or departure_dt-arrival_sched > MIN_DELTA_TIME_TRIP_SPAN):
+                    overlaped_staffs.append(f'{tf.fname} {tf.lname}')
+                    break
+        if len(overlaped_staffs) != 0:
+            error = f'{overlaped_staffs} not available'
+            raise ValidationError({'trip_staffs':error})
+
+
+
     def save(self,*args, **kwargs):
+        self.full_clean()
+
         self.update_empty_seats()
         super(Trip, self).save(*args, **kwargs)
 
@@ -142,6 +194,7 @@ class Trip(models.Model):
             if t.ticket_type == "luggage ticket":
                 current_load += t.get_child().weight
         return self.bus.maxload - current_load
+
 
 class TripStaff(models.Model):
     class Meta:

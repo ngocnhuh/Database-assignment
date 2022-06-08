@@ -131,7 +131,7 @@ trip_search_view = TripSearchView.as_view()
 
 class TripDetailUpdateView(UpdateView):
     model = Trip
-    form_class = TripForm
+    form_class = TripDetailForm
     pk_field = 'trip_id'
     template_name = 'trips/trip_du_view.html'
     
