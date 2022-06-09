@@ -67,7 +67,7 @@ CREATE TABLE `Route`(
   `starting_point` varchar(30) NOT NULL,
   `destination` varchar(30) NOT NULL,
   `distance` int,
-  `total_time` time,
+  `total_time` time NOT NULL,
   PRIMARY KEY (`route_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -238,7 +238,6 @@ ADD CONSTRAINT  `fk_passenger_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `T
 ALTER TABLE `Luggage_ticket`
 ADD CONSTRAINT  `fk_luggage_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-DROP TRIGGER IF EXISTS `EmptySeat`;
 DELIMITER $$
 CREATE  TRIGGER `EmptySeat` AFTER INSERT ON `Passenger_ticket`
 FOR EACH ROW
@@ -248,29 +247,6 @@ BEGIN
     WHERE `Trip`.trip_id IN (SELECT trip_id FROM  `Ticket` WHERE ticket_id= new.ticket_id);
 END; $$
 DELIMITER ;
-
-DROP TRIGGER IF EXISTS `UpdateEmptySeatDelete`;
-DELIMITER $$
-CREATE  TRIGGER `UpdateEmptySeatDelete` AFTER DELETE ON `Ticket`
-FOR EACH ROW
-BEGIN
-	UPDATE `Trip` 
-    SET empty_seats = empty_seats + 1
-    WHERE `Trip`.trip_id = OLD.trip_id;
-END; $$
-DELIMITER ;
-
-/* 
-DELETE FROM `Ticket` WHERE ticket_id = 32;
--- BEFORE INSERT: Table Trip - trip_id = 12 && empty_seats = 17
-INSERT INTO `Ticket` VALUES (32, 12,'Passenger','138 Nguyen Cu Trinh, Quan 1, TPHCM', true, 2, 2, 1, 350000);
-INSERT INTO `Passenger_ticket` VALUES (32, 4);
-
--- AFTER INSERT: Table Trip - trip_id = 12 && empty_seats = 16
-DELETE FROM `Ticket` WHERE ticket_id = 32;
--- AFTER DELETE: Table Trip - trip_id = 12 && empty_seats = 17
-*/
-
 
 /*INSERT DATA*/
 
@@ -371,12 +347,12 @@ INSERT INTO `Trip` VALUES
   (1,1,'2022-05-30','51B-001.72',2,30),
   (2,2,'2022-05-31','60B-745.98',2,20),
   (3,3,'2022-05-30','51B-001.18',10,30),
-  (4,4,'2022-04-28','51B-273.39',10,25),
-  (5,3,'2022-06-06','51B-001.18',10,30 ),
+  (4,4,'2022-06-30','51B-273.39',10,25),
+  (5,3,'2022-06-20','51B-001.18',10,30 ),
   (6,4, '2022-05-19','51B-273.39',10,25),
-  (7,5,'2022-04-30', '51B-001.72',2, 30),
+  (7,5,'2022-06-25', '51B-001.72',2, 30),
   (8,5,'2022-05-28', '51B-001.72',2, 30),
-  (9,6,'2022-06-01', '51B-021.99', 2, 15),
+  (9,6,'2022-06-22', '51B-021.99', 2, 15),
   (10,7, '2022-05-26','51B-273.39',2,25),
   (11,8, '2022-05-27 ','51B-001.72',10,30),
   (12,9 ,'2022-05-28 ', '60B-745.98',10, 20 ),
@@ -431,7 +407,7 @@ INSERT INTO `Membership` VALUES
   (3,10,'2019-02-12 15:30:00', '2024-02-12 15:30:00',1,30);
   
 INSERT INTO `Sales_promotion` VALUES
-  (1, 0.2,'SummerSale', 2, '2022-05-01 00:00:00', '2022-06-01 00:00:00');
+  (1, 0.2,'SummerSale', 2, '2022-05-01 00:00:00', '2022-06-06 00:00:00');
 
 INSERT INTO `Payment_methods` VALUES  
   (1,'Transfer'),
@@ -453,7 +429,7 @@ INSERT INTO `Ticket` VALUES
   (13, 5, 'Passenger', 'Hoa An, Dau Giay, Dong Nai', true, 1, 7, NULL,350000),
   (14, 6, 'Passenger', 'Hoa An, Dau Giay, Dong Nai' ,true, 2, 8, 1, 300000 ),
   (15, 6, 'Luggage', 'Hoa An, Dau Giay, Dong Nai ' ,true, 2, 8, 1, 80000),
-  (16, 7, 'Passenger', 'Buu dien thanh pho Da Lat ', true, 1, 6, 1, 180000),
+  (16, 7, 'Passenger', 'Buu dien thanh pho Da Lat ', true, 1, 6, NULL, 180000),
   (17, 7, 'Passenger', ' Buu dien thanh pho Da Lat', true, 2, 3, NULL, 180000),
   (18, 8, 'Luggage', 'Buu dien thanh pho Da Lat', true, 1, 1, 1,64000 ),
   (19, 8, 'Passenger','Hoa An, Dau Giay, Dong Nai', true, 2, 4, 1, 280000),

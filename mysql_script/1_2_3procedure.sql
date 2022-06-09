@@ -1,16 +1,35 @@
 USE `bus_system`;
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `AllStaffofTrip`$$
-CREATE PROCEDURE `AllStaffofTrip`(IN id int(9) ZEROFILL)
+DROP PROCEDURE IF EXISTS `StartingPointTrip`$$
+CREATE PROCEDURE `StartingPointTrip`(IN starting_point varchar(30))
 BEGIN
-	IF (id NOT IN (SELECT `trip_id` FROM `Trip`))
-    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Trip_id not found!';
+	IF (starting_point NOT IN (SELECT `starting_point` FROM `Route`))
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Starting location not found!';
     ELSE
 	BEGIN
-		SELECT E.ee_id, fname, lname, birth_date, sex,  phone, address, salary,  manager_id, vaccine
-		FROM (`Employee` E INNER JOIN `Bus_staff` S ON E.ee_id=S.ee_id)
-		WHERE E.ee_id IN (SELECT ee_id FROM `Trip_staff` WHERE trip_id=id)
-		ORDER BY vaccine DESC ;
+		SELECT *
+		FROM `Trip`
+		WHERE `Trip`.sched_id IN (SELECT S.sched_id FROM (`Trip_schedule` S INNER JOIN `Route` R ON S.route_id=R.route_id) WHERE R.starting_point= starting_point ) 
+		ORDER BY  `departure_date` DESC ;
+    END;
+    END IF;
+END; $$
+DELIMITER ;
+
+
+USE `bus_system`;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `DestinationTrip`$$
+CREATE PROCEDURE `DestinationTrip`(IN destination varchar(30))
+BEGIN
+	IF (destination NOT IN (SELECT `destination` FROM `Route`))
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Destination not found!';
+    ELSE
+	BEGIN
+		SELECT *
+		FROM `Trip`
+		WHERE `Trip`.sched_id IN (SELECT S.sched_id FROM (`Trip_schedule` S INNER JOIN `Route` R ON S.route_id=R.route_id) WHERE R.destination= destination) 
+		ORDER BY  `departure_date` DESC ;
     END;
     END IF;
 END; $$
@@ -35,5 +54,6 @@ BEGIN
 END; $$
 DELIMITER ;
 
-/*CALL `AllStaffofTrip`(5);
-CALL `BestSellerTripSchedule`(2);*/
+/*CALL `StartingPointTrip`('DALAT');
+CALL `DestinationTrip`('TPHCM');
+CALL `BestSellerTripSchedule`(4);*/
