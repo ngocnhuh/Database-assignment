@@ -35,6 +35,26 @@ BEGIN
 END; $$
 DELIMITER ;
 
+USE `bus_system`;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `FindTrip`$$
+CREATE PROCEDURE `FindTrip`(IN starting_point varchar(30), IN destination varchar(30))
+BEGIN
+	IF (starting_point NOT IN (SELECT `starting_point` FROM `Route`))
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Starting location not found!';
+    ELSEIF (destination NOT IN (SELECT `destination` FROM `Route`))
+	THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Destination not found!';
+    ELSE
+	BEGIN
+		SELECT *
+		FROM `Trip`
+		WHERE `Trip`.sched_id IN (SELECT S.sched_id FROM (`Trip_schedule` S INNER JOIN `Route` R ON S.route_id=R.route_id) WHERE R.starting_point= starting_point AND R.destination= destination) 
+		ORDER BY  `departure_date` DESC ;
+    END;
+    END IF;
+END; $$
+DELIMITER ;
+
 DELIMITER $$
 DROP PROCEDURE IF EXISTS `BestSellerTripSchedule`$$
 CREATE PROCEDURE `BestSellerTripSchedule` (IN id int(3) ZEROFILL)
@@ -56,4 +76,5 @@ DELIMITER ;
 
 /*CALL `StartingPointTrip`('DALAT');
 CALL `DestinationTrip`('TPHCM');
-CALL `BestSellerTripSchedule`(4);*/
+CALL `FindTrip`('DALAT','TPHCM');
+CALL `BestSellerTripSchedule`(2);*/
