@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db import connection
 
 from rest_framework.generics import ListAPIView
 
@@ -21,9 +22,23 @@ class TripSearchListAPIView(ListAPIView):
         date = self.request.GET.get('date') or None
 
         if route_start is not None:
-            qs = qs.filter(sched__route__starting_point = route_start)
+            cur = connection.cursor()
+            cur.callproc("StartingPointTrip", [route_start])
+            id_list = [r[0] for r in cur.fetchall()]
+            cur.close()
+            qs = qs.filter(trip_id__in = id_list)
+
+            # qs = qs.filter(sched__route__starting_point = route_start)
+
         if route_dest is not None:
-            qs = qs.filter(sched__route__destination = route_dest)
+            cur = connection.cursor()
+            cur.callproc("DestinationTrip", [route_dest])
+            id_list = [r[0] for r in cur.fetchall()]
+            cur.close()
+            qs = qs.filter(trip_id__in = id_list)
+
+            # qs = qs.filter(sched__route__destination = route_dest)
+
         if date is not None:
             date = datetime.strptime(date,'%Y-%m-%d').date()
             qs = qs.filter(departure_date__gte = date)

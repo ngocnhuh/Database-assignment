@@ -23,6 +23,7 @@
                         <th scope="col">Firstname</th>
                         <th scope="col">Lastname</th>
                         <th scope="col">Email</th>
+                        <th scope="col">Money Spent (VND)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,6 +33,7 @@
                             <td>{{ c.fname }}</td>
                             <td>{{ c.lname }}</td>
                             <td>{{ c.email }}</td>
+                            <td>{{ c.total_money }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

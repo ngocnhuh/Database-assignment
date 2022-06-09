@@ -3,15 +3,18 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.views import View
 from django.views.generic import CreateView,DeleteView,ListView,UpdateView
 from django.http import HttpResponse
+from django.db.models import F, Func
 
 from .models import *
 from .forms import *
 
 class CustomerListView(View):
     def get(self,request):
-        customers = Customer.objects.all()
+        qs = Customer.objects.all()
+        qs = qs.annotate(total_money=Func(F('customer_id'),function='total_money'))
+        qs = qs.order_by('-total_money')
         ctx = {
-            'customers':customers
+            'customers':qs
         }
         return render(request, 'customers/index.html', ctx)
 
