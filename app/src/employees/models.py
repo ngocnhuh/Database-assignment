@@ -1,6 +1,7 @@
 from django.db import models
+from django.core.validators import MinValueValidator,RegexValidator,ValidationError
 
-from django.core.validators import MinValueValidator,RegexValidator
+import datetime
 
 class Employee(models.Model):
     class Meta:
@@ -27,6 +28,16 @@ class Employee(models.Model):
 
     def __str__(self):
         return f'{self.ee_id:05d} - {self.fname} {self.lname}'
+
+    def clean(self,*args, **kwargs):
+        super(Employee, self).clean(*args, **kwargs)
+
+        if (datetime.date.today() - self.birth_date).days < 18*365:
+            raise ValidationError({'birth_date':"Employee's age must greater than 18 year olds"})
+
+    def save(self,*args, **kwargs):
+        self.full_clean()
+        super(Employee,self).save(*args, **kwargs)
 
     @property
     def job_type(self):

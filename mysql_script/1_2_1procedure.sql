@@ -56,7 +56,7 @@ IN phone varchar(20), IN address varchar(50), IN email varchar(50))
 	SET @age_customer = TIMESTAMPDIFF(YEAR, birth_date, CURDATE());
 	IF (NOT check_age_customer(@age_customer)) THEN
 		SET message_error = 'AGE IS NOT VALID';
-	ELSEIF @age_customer >= 14 THEN
+	ELSEIF @age_customer < 14 THEN
 		SET message_error = 'NOT ENOUGH AGE';
 	END IF;
     IF (check_phone_customer(phone) != 'TRUE') THEN

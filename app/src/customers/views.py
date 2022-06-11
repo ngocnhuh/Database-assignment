@@ -4,6 +4,7 @@ from django.views import View
 from django.views.generic import CreateView,DeleteView,ListView,UpdateView
 from django.http import HttpResponse
 from django.db.models import F, Func
+from django.db import connection,Error
 
 from .models import *
 from .forms import *
@@ -86,19 +87,56 @@ class CustomerDetailUpdateView(View):
 customer_detail_update_view = CustomerDetailUpdateView.as_view()
 
 
-class CustomerCreateView(CreateView):
-    model = Customer
-    form_class = CustomerForm
-    success_url = reverse_lazy('customers:index')
-    template_name = 'customers/cus_c_view.html'
+# class CustomerCreateView(CreateView):
+#     model = Customer
+#     form_class = CustomerForm
+#     success_url = reverse_lazy('customers:index')
+#     template_name = 'customers/cus_c_view.html'
+
+class CustomerCreateView(View):
+    def get(self,request):
+        form = CustomerForm()
+        return render(request,'customers/cus_c_view.html',{'form':form})
+    
+    def post(self,request):
+        form = CustomerForm(request.POST or None)
+        data = form.data
+
+        try:
+            cur = connection.cursor()
+            cur.callproc("insertCustomerData", 
+                [
+                    data['fname'], 
+                    data['lname'], 
+                    data['birth_date'], 
+                    data['phone'], 
+                    data['address'], 
+                    data['email']
+                ])
+            cur.close()
+            return redirect(reverse_lazy('customers:index'))
+        except Error as e:
+            form.add_error(None, e)
+            return render(request,'customers/cus_c_view.html',{'form':form})
 
 customer_create_view = CustomerCreateView.as_view()
 
 
-class CustomerDeleteView(DeleteView):
-    model = Customer
-    success_url = reverse_lazy('customers:index')
-    template_name = 'customers/cus_d_view.html'
+# class CustomerDeleteView(DeleteView):
+#     model = Customer
+#     success_url = reverse_lazy('customers:index')
+#     template_name = 'customers/cus_d_view.html'
+
+class CustomerDeleteView(View):
+    def get(self,request,pk):
+        cus = get_object_or_404(Customer,pk=pk)
+        return render(request, 'customers/cus_d_view.html',{'object':cus})
+
+    def post(self,request,pk):
+        cur = connection.cursor()
+        cur.callproc("deleteCustomerData",[pk])
+        cur.close()
+        return redirect(reverse_lazy('customers:index'))
 
 customer_delete_view = CustomerDeleteView.as_view()
 
