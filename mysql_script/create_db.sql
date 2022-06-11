@@ -238,6 +238,7 @@ ADD CONSTRAINT  `fk_passenger_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `T
 ALTER TABLE `Luggage_ticket`
 ADD CONSTRAINT  `fk_luggage_ticket_id` FOREIGN KEY (`ticket_id`) REFERENCES `Ticket` (`ticket_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+DROP TRIGGER IF EXISTS `EmptySeat`;
 DELIMITER $$
 CREATE  TRIGGER `EmptySeat` AFTER INSERT ON `Passenger_ticket`
 FOR EACH ROW
@@ -247,6 +248,28 @@ BEGIN
     WHERE `Trip`.trip_id IN (SELECT trip_id FROM  `Ticket` WHERE ticket_id= new.ticket_id);
 END; $$
 DELIMITER ;
+
+DROP TRIGGER IF EXISTS `UpdateEmptySeatDelete`;
+DELIMITER $$
+CREATE  TRIGGER `UpdateEmptySeatDelete` AFTER DELETE ON `Ticket`
+FOR EACH ROW
+BEGIN
+	UPDATE `Trip` 
+    SET empty_seats = empty_seats + 1
+    WHERE `Trip`.trip_id = OLD.trip_id;
+END; $$
+DELIMITER ;
+
+/*  
+DELETE FROM `Ticket` WHERE ticket_id = 32;
+-- BEFORE INSERT: Table Trip - trip_id = 12 && empty_seats = 17
+INSERT INTO `Ticket` VALUES (32, 12,'Passenger','138 Nguyen Cu Trinh, Quan 1, TPHCM', true, 2, 2, 1, 350000);
+INSERT INTO `Passenger_ticket` VALUES (32, 4);
+
+-- AFTER INSERT: Table Trip - trip_id = 12 && empty_seats = 16
+DELETE FROM `Ticket` WHERE ticket_id = 32;
+-- AFTER DELETE: Table Trip - trip_id = 12 && empty_seats = 17
+*/
 
 /*INSERT DATA*/
 
