@@ -60,11 +60,9 @@ IN phone varchar(20), IN address varchar(50), IN email varchar(50))
 		SET message_error = 'AGE IS NOT VALID';
 	ELSEIF @age_customer < 14 THEN
 		SET message_error = 'NOT ENOUGH AGE';
-	END IF;
-    IF (check_phone_customer(phone) != 'TRUE') THEN
+    ELSEIF (check_phone_customer(phone) != 'TRUE') THEN
 		SET message_error = check_phone_customer(phone);
-	END IF;
-    IF (check_email_customer(email) != 'TRUE') THEN
+    ELSEIF (check_email_customer(email) != 'TRUE') THEN
 		SET message_error = check_email_customer(email);
 	END IF;
     IF message_error = '' THEN
