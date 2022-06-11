@@ -1,11 +1,10 @@
 USE `bus_system`;
 /* Phan 1.2.1 - Start */
 
-
 DROP FUNCTION IF EXISTS check_age_customer;
 CREATE FUNCTION check_age_customer(age INT)
 RETURNS BOOL DETERMINISTIC
-RETURN 0 <= age AND age <= 150;
+RETURN (age IS NULL OR 0 <= age AND age <= 150);
 
 DROP FUNCTION IF EXISTS check_phone_customer;
 DELIMITER $$
@@ -14,7 +13,9 @@ RETURNS VARCHAR(1000) DETERMINISTIC
 BEGIN 
 	DECLARE x INT DEFAULT 1;
     DECLARE flag VARCHAR(1000) DEFAULT 'TRUE';
-	IF char_length(phone) != 10 THEN
+    IF phone IS NULL THEN
+		SET flag = 'TRUE';
+	ELSEIF char_length(phone) != 10 THEN
 		SET flag = 'PHONE IS NOT VALID (THE LENGTH OF PHONE IS FALSE)';
 	ELSE
 		/* Index start = 1*/
@@ -39,7 +40,7 @@ DELIMITER $$
 CREATE FUNCTION check_email_customer(email varchar(50))
 RETURNS VARCHAR(1000) DETERMINISTIC
 BEGIN 
-	IF (email REGEXP '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)') THEN 
+	IF (email IS NULL OR email REGEXP '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)') THEN 
 		RETURN 'TRUE';
 	ELSE 
 		RETURN 'EMAIL IS NOT VALID';
@@ -54,9 +55,7 @@ IN phone varchar(20), IN address varchar(50), IN email varchar(50))
 	BEGIN
 	DECLARE message_error VARCHAR(1000) DEFAULT '';
 	SET @age_customer = TIMESTAMPDIFF(YEAR, birth_date, CURDATE());
-    if(@age_customer IS NULL) THEN
-		SET message_error = '';
-	ELSEIF (NOT check_age_customer(@age_customer)) THEN
+	IF (NOT check_age_customer(@age_customer)) THEN
 		SET message_error = 'AGE IS NOT VALID';
 	ELSEIF @age_customer < 14 THEN
 		SET message_error = 'NOT ENOUGH AGE';
@@ -73,7 +72,7 @@ IN phone varchar(20), IN address varchar(50), IN email varchar(50))
     END $$
 DELIMITER ;
 
-CALL insertCustomerData('Le','Minh Cong','1982-05-22','0902005932','12 Le Duan, Tuy Hoa', 'minhcongth123@gmail.com');
+-- CALL insertCustomerData('Le','Minh Cong', NULL, NULL, '', '');
 
 DROP PROCEDURE IF EXISTS updateCustomerData;
 DELIMITER $$
@@ -99,8 +98,6 @@ BEGIN
     SET @age_customer = TIMESTAMPDIFF(YEAR, up_birth_date, CURDATE());
     IF (flag = FALSE) THEN
 		SET message_error = 'NOT EXIST CUSTOMER ID';
-	ELSEIF (up_birth_date IS NULL) THEN
-		SET message_error = '';
 	ELSEIF (NOT check_age_customer(@age_customer)) THEN
 		SET message_error = 'AGE IS NOT VALID';
 	ELSEIF @age_customer < 14 THEN
@@ -153,5 +150,5 @@ BEGIN
 END $$
 
 DELIMITER ;
-CALL deleteCustomerData(11);
+-- CALL deleteCustomerData(12);
 /* Phan 1.2.1 - End */
