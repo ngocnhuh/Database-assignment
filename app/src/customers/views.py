@@ -68,8 +68,26 @@ class CustomerDetailUpdateView(View):
 
         elif 'cus-save-btn' in request.POST:
             cus_form = CustomerForm(request.POST,instance=cus)
-            if cus_form.is_valid():
-                cus_form.save()
+            # if cus_form.is_valid():
+            #     cus_form.save()
+
+            data = form.data
+            try:
+                cur = connection.cursor()
+                cur.callproc("updateCustomerData", 
+                    [
+                        data['customer_id'],
+                        data['fname'], 
+                        data['lname'], 
+                        data['birth_date'], 
+                        data['phone'], 
+                        data['address'], 
+                        data['email']
+                    ])
+                cur.close()
+            except Error as e:
+                cus_form.add_error(None, e)
+
             if hasattr(cus, 'membership'):
                 ms_form = MembershipForm(instance=cus.membership)
             else:
