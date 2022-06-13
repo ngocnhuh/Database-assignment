@@ -6,7 +6,38 @@
 
 {% block content %}
     {% include 'components/navbar.html' %}
-    <div class="container">
-        <h3>This is home page</h3>
-    </div>
+    <div class="container-fluid">
+        <!-- Main introduction-->
+       <div class="bg-image position-relative overflow-hidden text-center text-white " 
+           style="background-image: url('https://www.uniqa.pl/files/_processed_/2/e/csm_wyrejestrowanie-pojazd_01_f2f4a1898c.jpg');
+           height:85vh;
+           background-position:center;
+           background-size:100%;
+           background-repeat:no-repeat;
+           overflow-y: hidden;
+           overflow-x: hidden;">
+           <div class="col-md-5 p-lg-5 mx-auto my-4">
+               <h1 class="display-4 fw-bolder">Homepage</h1>
+               <p class="lead">Hệ thống quản lý cho nhà xe khách liên tỉnh</p>
+               <a class="btn btn-dark" href="#about">About this page</a>
+             </div>
+       </div>            
+       <!-- About section-->
+       <section id="about">
+           <div class="container px-4 my-5">
+               <div class="row gx-4 justify-content-center">
+                   <div class="col-lg-8">
+                       <h2>About this page</h2>
+                       <p class="lead">Trang web cho BTL số 2 môn Hệ cơ sở dữ liệu CO2013 của nhóm L01-A. Danh sách thành viên của nhóm: </p>
+                       <ul>
+                           <li>Lê Nguyên Hùng - 2013360</li>
+                           <li>Nguyễn Văn Bảo Nguyên - 2013930</li>
+                           <li>Huỳnh Ngọc Như - 2010495</li>
+                           <li>Võ Phan Anh Quân - 2014285</li>
+                       </ul>
+                   </div>
+               </div>
+           </div>
+       </section>
+   </div>
 {% endblock content %}

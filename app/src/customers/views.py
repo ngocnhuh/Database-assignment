@@ -71,12 +71,12 @@ class CustomerDetailUpdateView(View):
             # if cus_form.is_valid():
             #     cus_form.save()
 
-            data = form.data
+            data = cus_form.data
             try:
                 cur = connection.cursor()
                 cur.callproc("updateCustomerData", 
                     [
-                        data['customer_id'],
+                        pk,
                         data['fname'], 
                         data['lname'], 
                         data['birth_date'], 

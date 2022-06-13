@@ -75,6 +75,6 @@ END; $$
 DELIMITER ;
 
 /*CALL `StartingPointTrip`('DALAT');
-CALL `DestinationTrip`('TPHCM');
-CALL `FindTrip`('DALAT','TPHCM');
+CALL `DestinationTrip`('BINHDUONG');
+CALL `FindTrip`('TUYHOA','DANANG');
 CALL `BestSellerTripSchedule`(2);*/
