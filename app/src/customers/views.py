@@ -72,6 +72,8 @@ class CustomerDetailUpdateView(View):
             #     cus_form.save()
 
             data = cus_form.data
+            date_field = data['birth_date'] or None
+            phone_field = data['phone'] or None
             try:
                 cur = connection.cursor()
                 cur.callproc("updateCustomerData", 
@@ -79,8 +81,8 @@ class CustomerDetailUpdateView(View):
                         pk,
                         data['fname'], 
                         data['lname'], 
-                        data['birth_date'], 
-                        data['phone'], 
+                        date_field, 
+                        phone_field, 
                         data['address'], 
                         data['email']
                     ])
@@ -120,14 +122,16 @@ class CustomerCreateView(View):
         form = CustomerForm(request.POST or None)
         data = form.data
 
+        date_field = data['birth_date'] or None
+        phone_field = data['phone'] or None
         try:
             cur = connection.cursor()
             cur.callproc("insertCustomerData", 
                 [
                     data['fname'], 
                     data['lname'], 
-                    data['birth_date'], 
-                    data['phone'], 
+                    date_field, 
+                    phone_field, 
                     data['address'], 
                     data['email']
                 ])

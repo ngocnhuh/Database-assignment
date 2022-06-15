@@ -40,7 +40,7 @@ DELIMITER $$
 CREATE FUNCTION check_email_customer(email varchar(50))
 RETURNS VARCHAR(1000) DETERMINISTIC
 BEGIN 
-	IF (email IS NULL OR email REGEXP '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)') THEN 
+	IF (email IS NULL OR email = "" OR email REGEXP '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)') THEN 
 		RETURN 'TRUE';
 	ELSE 
 		RETURN 'EMAIL IS NOT VALID';

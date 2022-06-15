@@ -1,6 +1,8 @@
 from django import forms
 from django.urls import reverse_lazy
 
+from django.core.validators import ValidationError
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Row,Column,Submit,Button
 from crispy_forms.bootstrap import FormActions
@@ -110,7 +112,34 @@ class TripForm(forms.ModelForm):
         )
     )
 
+    def clean_trip_staffs(self):
+        departure_sched = datetime.combine(self.cleaned_data['departure_date'], self.cleaned_data['sched'].departure_time)
+        arrival_sched = datetime.combine(self.cleaned_data['departure_date'], self.cleaned_data['sched'].arrival_time)
+
+        trip_staffs = self.cleaned_data['trip_staffs']
+        overlaped_staffs = []
+        for tf in trip_staffs:
+            tf_sched = tf.trips.all()
+            if self.trip_id is not None:
+                tf_sched=tf_sched.exclude(trip_id = self.trip_id)
+            for trip in tf_sched:
+                departure_dt = datetime.combine(trip.departure_date, trip.sched.departure_time)
+                arrival_dt = datetime.combine(trip.departure_date, trip.sched.arrival_time)
+                if not (departure_sched-arrival_dt > MIN_DELTA_TIME_TRIP_SPAN \
+                    or departure_dt-arrival_sched > MIN_DELTA_TIME_TRIP_SPAN):
+                    overlaped_staffs.append(f'{tf.fname} {tf.lname}')
+                    break
+        if len(overlaped_staffs) != 0:
+            error = f'{overlaped_staffs} not available'
+            raise ValidationError(error)
+
+        return self.cleaned_data['trip_staffs']
+
     def __init__(self,*args, **kwargs):
+        self.trip_id = None
+        if kwargs.get('instance'):
+            self.trip_id = kwargs.get('instance').trip_id
+
         super(TripForm,self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(

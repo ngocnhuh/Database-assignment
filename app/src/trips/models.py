@@ -145,34 +145,11 @@ class Trip(models.Model):
             if not (departure_sched-arrival_dt > MIN_DELTA_TIME_TRIP_SPAN \
                 or departure_dt-arrival_sched > MIN_DELTA_TIME_TRIP_SPAN):
                 raise ValidationError({'driver':'Driver not available'})
-        
-        # bus_staff
-        if self.trip_id:
-            trip_staffs = self.trip_staffs.all()
-            overlaped_staffs = []
-            for tf in trip_staffs:
-                tf_sched = tf.trips.all()
-                if self.trip_id is not None:
-                    tf_sched=tf_sched.exclude(trip_id = self.trip_id)
-                for trip in tf_sched:
-                    departure_dt = datetime.combine(trip.departure_date, trip.sched.departure_time)
-                    arrival_dt = datetime.combine(trip.departure_date, trip.sched.arrival_time)
-                    if not (departure_sched-arrival_dt > MIN_DELTA_TIME_TRIP_SPAN \
-                        or departure_dt-arrival_sched > MIN_DELTA_TIME_TRIP_SPAN):
-                        overlaped_staffs.append(f'{tf.fname} {tf.lname}')
-                        break
-            if len(overlaped_staffs) != 0:
-                error = f'{overlaped_staffs} not available'
-                raise ValidationError({'trip_staffs':error})
-
-
-
+    
     def save(self,*args, **kwargs):
         self.full_clean()
 
         self.update_empty_seats()
-        if not self.trip_id:
-            super(Trip, self).save(*args, **kwargs)
         super(Trip, self).save(*args, **kwargs)
         
 
