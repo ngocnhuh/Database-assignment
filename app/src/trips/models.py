@@ -5,7 +5,7 @@ from datetime import datetime,date,time,timedelta
 
 from employees.models import Driver,BusStaff
 
-MIN_DELTA_TIME_TRIP_SPAN = timedelta(hours=12)
+MIN_DELTA_TIME_TRIP_SPAN = timedelta(hours=0)
 
 
 class BusChoices(models.TextChoices):
@@ -145,6 +145,17 @@ class Trip(models.Model):
             if not (departure_sched-arrival_dt > MIN_DELTA_TIME_TRIP_SPAN \
                 or departure_dt-arrival_sched > MIN_DELTA_TIME_TRIP_SPAN):
                 raise ValidationError({'driver':'Driver not available'})
+
+        # bus 
+        bus_sched = self.bus.trips.all()
+        if self.trip_id is not None:
+            bus_sched=bus_sched.exclude(trip_id = self.trip_id)
+        for trip in bus_sched:
+            departure_dt = datetime.combine(trip.departure_date, trip.sched.departure_time)
+            arrival_dt = datetime.combine(trip.departure_date, trip.sched.arrival_time)
+            if not (departure_sched-arrival_dt > MIN_DELTA_TIME_TRIP_SPAN \
+                or departure_dt-arrival_sched > MIN_DELTA_TIME_TRIP_SPAN):
+                raise ValidationError({'bus':'Bus not available'})
     
     def save(self,*args, **kwargs):
         self.full_clean()
